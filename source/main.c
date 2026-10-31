@@ -780,11 +780,13 @@ static void draw_room(void) {
 			int dx = sol[i] == 'L' ? -1 : sol[i] == 'R' ? 1 : 0, dy = sol[i] == 'U' ? -1 : sol[i] == 'D' ? 1 : 0;
 			V2 a = tile_px(x, y), b = tile_px(x + dx, y + dy);
 			float k = (float)i / hintSteps;
-			spr(sprites_spark_idx, (a.x + b.x) / 2 + sx, (a.y + b.y) / 2, 0.5f, 0.6f, 0, rgba(0.6f + 0.4f * k, 1, 0.7f, 0.55f));
+			float mx = (a.x + b.x) / 2 + sx, my = (a.y + b.y) / 2;
+			spr(sprites_glow_idx, mx, my, 0.5f, 0.28f, 0, rgba(0.5f, 1, 0.7f, 0.5f - 0.3f * k));
+			spr(sprites_spark_idx, mx, my, 0.6f, 1.1f, 0, rgba(0.7f + 0.3f * k, 1, 0.8f, 0.95f - 0.4f * k));
 			if (walk >= i && walk < i + 1) {
 				float f = walk - i;
-				spr(sprites_glow_idx, a.x + (b.x - a.x) * f + sx, a.y + (b.y - a.y) * f, 1.2f, 0.5f, 0,
-					rgba(0.7f, 1, 0.8f, 0.5f));
+				spr(sprites_glow_idx, a.x + (b.x - a.x) * f + sx, a.y + (b.y - a.y) * f, 1.2f, 0.7f, 0,
+					rgba(0.7f, 1, 0.8f, 0.7f));
 			}
 			x += dx;
 			y += dy;
