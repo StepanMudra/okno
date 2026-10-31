@@ -497,25 +497,27 @@ static bool word_on_floor(int w) { return word_present(&st, w) && wordReturn[w] 
 // ---------------------------------------------------------------------------
 // save
 
-static int saveLevel;
+static int saveLevel, maxLevel;  // current room, furthest room ever reached
 
 static void load_save(void) {
 	FILE* f = fopen(SAVE_PATH, "r");
-	saveLevel = 0;
+	saveLevel = maxLevel = 0;
 	if (f) {
-		if (fscanf(f, "%d", &saveLevel) != 1) saveLevel = 0;
+		if (fscanf(f, "%d %d", &saveLevel, &maxLevel) < 1) saveLevel = 0;
 		fclose(f);
 	}
 	if (saveLevel < 0 || saveLevel >= LEVEL_COUNT) saveLevel = 0;
+	if (maxLevel < saveLevel || maxLevel >= LEVEL_COUNT) maxLevel = saveLevel;
 }
 
 static void write_save(int lvl) {
 	saveLevel = lvl;
+	if (lvl > maxLevel) maxLevel = lvl;
 	mkdir("sdmc:/3ds", 0777);
 	mkdir(SAVE_DIR, 0777);
 	FILE* f = fopen(SAVE_PATH, "w");
 	if (f) {
-		fprintf(f, "%d\n", lvl);
+		fprintf(f, "%d %d\n", saveLevel, maxLevel);
 		fclose(f);
 	}
 }
@@ -742,11 +744,31 @@ static void draw_room(void) {
 // ---------------------------------------------------------------------------
 // screens
 
-typedef enum { SC_TITLE, SC_CHAPTER, SC_PLAY, SC_SOLVED, SC_END } Screen;
+typedef enum { SC_TITLE, SC_CHAPTERS, SC_CHAPTER, SC_PLAY, SC_SOLVED, SC_END } Screen;
 static Screen screen = SC_TITLE;
 static float screenTime;
 static int menuSel;
 static float fadeIn;
+
+// title menu entries that make sense right now: 0 continue, 1 chapters, 2 new game, 3 quit
+static int title_items(int* ids) {
+	int n = 0;
+	if (saveLevel > 0) ids[n++] = 0;
+	if (maxLevel > 0) ids[n++] = 1;
+	ids[n++] = 2;
+	ids[n++] = 3;
+	return n;
+}
+
+static void draw_menu_item(const char* label, float y, bool sel, float scale) {
+	if (sel) {
+		C2D_ImageTint t;
+		C2D_PlainImageTint(&t, rgba(1, 0.85f, 0.55f, 0.35f + 0.1f * sinf(timeSec * 4)), 1);
+		C2D_DrawImageAt(img[sprites_panel_idx], BOT_W / 2 - 90, y - 4, 0.5f, &t, 180 / 64.0f, (scale * 40) / 32.0f);
+	}
+	text(label, BOT_W / 2, y, scale, sel ? rgba(1, 0.95f, 0.85f, 1) : rgba(0.6f, 0.65f, 0.9f, 0.8f), C2D_AlignCenter, 0,
+		0);
+}
 
 static void go(Screen s) {
 	screen = s;
@@ -905,8 +927,9 @@ static void draw_top_play(void) {
 static void draw_end_top(void) {
 	draw_backdrop(1);
 	float a = fminf(1, screenTime / 2);
-	text("Lum si to zapamatuje.", TOP_W / 2, 90, 0.9f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
-	text("Pokračování příště…", TOP_W / 2, 130, 0.6f, rgba(0.7f, 0.78f, 1, a * 0.8f), C2D_AlignCenter, 0, 0.5f);
+	text("Lum si to nezapamatuje.", TOP_W / 2, 84, 0.9f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
+	float b = fminf(1, fmaxf(0, screenTime - 2.5f) / 2);
+	text("Ale poznámka ano.", TOP_W / 2, 124, 0.75f, rgba(0.7f, 1, 0.8f, b), C2D_AlignCenter, 0, 1.5f);
 	draw_vignette();
 }
 
@@ -1129,25 +1152,37 @@ int main(void) {
 		if (cp.dx > 60) held |= KEY_RIGHT;
 
 		update_particles(dt);
-		// debug: X cycles the tint mode (diagnosing tint in emulators)
-		static int tintMode = C2D_TintMult;
-		if (down & KEY_X) {
-			tintMode = (tintMode + 1) % 3;
-			C2D_SetTintMode(tintMode);
-		}
 
 		switch (screen) {
 		case SC_TITLE: {
-			bool hasSave = saveLevel > 0;
-			int items = hasSave ? 3 : 2;
-			if (down & (KEY_DUP | KEY_CPAD_UP)) { menuSel = (menuSel + items - 1) % items; audio_play(SND_MENU); }
-			if (down & (KEY_DDOWN | KEY_CPAD_DOWN)) { menuSel = (menuSel + 1) % items; audio_play(SND_MENU); }
+			int ids[4], n = title_items(ids);
+			if (down & (KEY_DUP | KEY_CPAD_UP)) { menuSel = (menuSel + n - 1) % n; audio_play(SND_MENU); }
+			if (down & (KEY_DDOWN | KEY_CPAD_DOWN)) { menuSel = (menuSel + 1) % n; audio_play(SND_MENU); }
+			if (menuSel >= n) menuSel = 0;
 			if (down & KEY_A) {
 				audio_play(SND_GATE);
-				int choice = hasSave ? menuSel : menuSel + 1;
+				int choice = ids[menuSel];
 				if (choice == 0) start_level(saveLevel);
-				else if (choice == 1) start_level(0);
+				else if (choice == 1) {
+					go(SC_CHAPTERS);
+					menuSel = chapter_of(saveLevel);
+				} else if (choice == 2) start_level(0);
 				else goto quit;
+			}
+			break;
+		}
+		case SC_CHAPTERS: {
+			int n = chapter_of(maxLevel) + 1;
+			if (down & (KEY_DUP | KEY_CPAD_UP)) { menuSel = (menuSel + n - 1) % n; audio_play(SND_MENU); }
+			if (down & (KEY_DDOWN | KEY_CPAD_DOWN)) { menuSel = (menuSel + 1) % n; audio_play(SND_MENU); }
+			if (down & KEY_B) {
+				go(SC_TITLE);
+				menuSel = 0;
+				audio_play(SND_MENU);
+			}
+			if (down & KEY_A) {
+				audio_play(SND_GATE);
+				start_level(CHAPTERS[menuSel].first);
 			}
 			break;
 		}
@@ -1165,10 +1200,7 @@ int main(void) {
 			update_play(down, held, dt);
 			if ((down & KEY_A) && screenTime > 0.8f) {
 				if (levelIdx + 1 < LEVEL_COUNT) start_level(levelIdx + 1);
-				else {
-					write_save(0);
-					go(SC_END);
-				}
+				else go(SC_END);
 			}
 			break;
 		case SC_END:
@@ -1192,10 +1224,11 @@ int main(void) {
 			eye = (e == 0 ? 1 : -1) * slider * 3.0f;
 			C2D_TargetClear(target, C2D_Color32(4, 5, 14, 255));
 			C2D_SceneBegin(target);
-			C2D_SetTintMode(tintMode);
+			C2D_SetTintMode(C2D_TintMult);
 			blend_normal();
 			switch (screen) {
-			case SC_TITLE: draw_title_top(); break;
+			case SC_TITLE:
+			case SC_CHAPTERS: draw_title_top(); break;
 			case SC_CHAPTER: draw_chapter_top(); break;
 			case SC_PLAY:
 			case SC_SOLVED: draw_top_play(); break;
@@ -1210,23 +1243,21 @@ int main(void) {
 		switch (screen) {
 		case SC_TITLE: {
 			draw_bottom_plain(NULL, NULL, 0);
-			bool hasSave = saveLevel > 0;
-			const char* items[3] = { "Pokračovat", "Nová hra", "Konec" };
-			int first = hasSave ? 0 : 1;
-			for (int i = first; i < 3; i++) {
-				int idx = i - first;
-				bool sel = idx == menuSel;
-				float y = 70 + idx * 36;
-				if (sel) {
-					C2D_ImageTint t;
-					C2D_PlainImageTint(&t, rgba(1, 0.85f, 0.55f, 0.35f + 0.1f * sinf(timeSec * 4)), 1);
-					C2D_DrawImageAt(img[sprites_panel_idx], BOT_W / 2 - 80, y - 4, 0.5f, &t, 160 / 64.0f, 30 / 32.0f);
-				}
-				text(items[i], BOT_W / 2, y, 0.7f, sel ? rgba(1, 0.95f, 0.85f, 1) : rgba(0.6f, 0.65f, 0.9f, 0.8f),
-					C2D_AlignCenter, 0, 0);
-			}
+			static const char* names[4] = { "Pokračovat", "Kapitoly", "Nová hra", "Konec" };
+			int ids[4], n = title_items(ids);
+			for (int i = 0; i < n; i++) draw_menu_item(names[ids[i]], 40 + i * 36, i == menuSel, 0.7f);
 			text("Claude & Štěpán · 2026", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f),
 				C2D_AlignCenter, 0, 0);
+			break;
+		}
+		case SC_CHAPTERS: {
+			draw_bottom_plain(NULL, NULL, 0);
+			int n = chapter_of(maxLevel) + 1;
+			for (int i = 0; i < CHAPTER_COUNT; i++) {
+				bool open = i < n;
+				draw_menu_item(open ? CHAPTERS[i].title : "· · ·", 14 + i * 32, i == menuSel, 0.6f);
+			}
+			text("A hrát   B zpět", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f), C2D_AlignCenter, 0, 0);
 			break;
 		}
 		case SC_CHAPTER:
@@ -1244,9 +1275,9 @@ int main(void) {
 			break;
 		}
 		case SC_END:
-			draw_bottom_plain("Tohle je konec první kapitoly vývojové verze.\n\nDalší kapitoly: Okno, Pořadí, "
-				"Poznámky, Teplota, Otrava.",
-				screenTime > 2 ? "A — na začátek" : NULL, screenTime);
+			draw_bottom_plain("OKNO\n\nNápad, kód, grafika a zvuk: Claude\nRežie, testování a stará 3DS: Štěpán\n\n"
+				"Díky, že jsi hrál.",
+				screenTime > 3 ? "A — na začátek" : NULL, screenTime);
 			break;
 		}
 		if (fadeIn < 1) C2D_DrawRectSolid(0, 0, 0.9f, BOT_W, SCR_H, rgba(0.01f, 0.01f, 0.04f, 1 - fadeIn));
