@@ -305,6 +305,7 @@ def main():
         out.append("  {")
         out.append(f"    .title = {c_str(r.title)}, .cap = {r.cap}, .par = {r.par},")
         out.append(f"    .notes = {r.notes}, .startNotes = {c_str(r.start_notes)}, .hot = {r.hot},")
+        out.append(f"    .solution = {c_str(r.solution)},")
         out.append(f"    .text = {c_str(chr(10).join(r.text))},")
         out.append(f"    .words = {{ {words} }},")
         out.append(f"    .gates = {{ {gates} }},")

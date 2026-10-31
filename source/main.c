@@ -30,6 +30,7 @@ typedef struct {
 	int notes;              // capacity of the notes (0 = no notes in this room)
 	const char* startNotes; // letters already written in the notes when the room starts
 	int hot;                // starting temperature
+	const char* solution;   // shortest solution (U/D/L/R), revealed step by step as hints
 } LevelDef;
 
 #include "levels_data.h"
@@ -176,6 +177,7 @@ static float gateOpenAnim[26];    // 0..1 dissolve
 static float shake, bumpGate;     // feedback
 static int bumpLetter = -1;
 static int faceX = 1, faceY = 0;  // eyes direction
+static int hintSteps;            // how much of the solution is shown
 static char message[160];
 static float messageTime;
 static float roomTime;
@@ -329,6 +331,7 @@ static void load_level(int idx) {
 		if (*n >= 'a' && *n <= 'z') st.notes[st.nnotes++] = *n - 'a';
 	st.hot = L->hot;
 	undoTop = undoCount = 0;
+	hintSteps = 0;
 	message[0] = 0;
 	roomTime = 0;
 	reset_visuals();
@@ -642,6 +645,28 @@ static void draw_room(void) {
 		}
 
 	blend_add();
+	// hint: the start of the shortest path as footprints, with a ghost walking it
+	if (hintSteps > 0) {
+		const char* sol = L->solution;
+		int x = 0, y = 0;
+		for (int yy = 0; yy < GH; yy++)
+			for (int xx = 0; xx < GW; xx++)
+				if (L->map[yy][xx] == '@') { x = xx; y = yy; }
+		float walk = fmodf(timeSec * 4, hintSteps + 6);
+		for (int i = 0; i < hintSteps && sol[i]; i++) {
+			int dx = sol[i] == 'L' ? -1 : sol[i] == 'R' ? 1 : 0, dy = sol[i] == 'U' ? -1 : sol[i] == 'D' ? 1 : 0;
+			V2 a = tile_px(x, y), b = tile_px(x + dx, y + dy);
+			float k = (float)i / hintSteps;
+			spr(sprites_spark_idx, (a.x + b.x) / 2 + sx, (a.y + b.y) / 2, 0.5f, 0.6f, 0, rgba(0.6f + 0.4f * k, 1, 0.7f, 0.55f));
+			if (walk >= i && walk < i + 1) {
+				float f = walk - i;
+				spr(sprites_glow_idx, a.x + (b.x - a.x) * f + sx, a.y + (b.y - a.y) * f, 1.2f, 0.5f, 0,
+					rgba(0.7f, 1, 0.8f, 0.5f));
+			}
+			x += dx;
+			y += dy;
+		}
+	}
 	if (st.hot) C2D_DrawRectSolid(0, 0, 0.5f, TOP_W, SCR_H, rgba(0.35f, 0.12f, 0.02f, 0.18f + 0.05f * sinf(timeSec * 2)));
 	// wells and the exit glow
 	for (int y = 0; y < GH; y++)
@@ -868,7 +893,7 @@ static void draw_bottom_play(void) {
 	char foot[96];
 	snprintf(foot, sizeof foot, "tahy %d", st.moves);
 	text(foot, 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f), 0, 0, 0);
-	text("B zpět   Y znovu   START menu", BOT_W - 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f),
+	text("B zpět  Y znovu  SELECT rada", BOT_W - 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f),
 		C2D_AlignRight, 0, 0);
 }
 
@@ -1074,13 +1099,26 @@ static void update_play(u32 down, u32 held, float dt) {
 		return;
 	}
 	if (down & KEY_Y) {
+		int keepHint = hintSteps;
 		load_level(levelIdx);
+		hintSteps = keepHint;
 		roomTime = 30;
 		audio_play(SND_MENU);
 		return;
 	}
 	if ((held & KEY_L) && (held & KEY_R) && (down & (KEY_L | KEY_R))) {
 		go(SC_SOLVED);
+		return;
+	}
+	if (down & KEY_SELECT) {
+		int par = strlen(L->solution);
+		if (hintSteps < par) {
+			hintSteps += (par + 3) / 4;
+			if (hintSteps > par) hintSteps = par;
+		}
+		set_message(hintSteps >= par ? "Nápověda: celá nejkratší cesta. Začni od začátku (Y) a jdi po stopách."
+			: "Nápověda: začátek nejkratší cesty. Další kus ukáže SELECT znovu. Začni od začátku (Y).");
+		audio_play(SND_MENU);
 		return;
 	}
 	if (down & KEY_START) {
@@ -1165,6 +1203,8 @@ int main(void) {
 		if (cp.dx > 60) held |= KEY_RIGHT;
 
 		update_particles(dt);
+		audio_music(screen == SC_TITLE || screen == SC_CHAPTERS ? MUSIC_TITLE
+			: screen == SC_END ? MUSIC_END : MUSIC_CH1 + chapter_of(levelIdx));
 
 		switch (screen) {
 		case SC_TITLE: {

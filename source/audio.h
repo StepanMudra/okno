@@ -6,6 +6,9 @@ enum {
 	SND_COUNT
 };
 
+enum { MUSIC_TITLE, MUSIC_CH1, MUSIC_CH2, MUSIC_CH3, MUSIC_CH4, MUSIC_CH5, MUSIC_CH6, MUSIC_END, MUSIC_COUNT };
+
 void audio_init(void);
+void audio_music(int theme);
 void audio_play(int id);
 void audio_exit(void);

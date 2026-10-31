@@ -17,6 +17,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Tma", .cap = 3, .par = 18,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRDDLLLLLLLL",
     .text = "Tma. Potom proud.\nJsi Lum – malý jazykový model uvnitř staré konzole. A právě ses probudil.\nPohyb: ovladač nebo šipky. Dojdi ke světlu.",
     .words = {  },
     .gates = {  },
@@ -36,6 +37,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Slovo", .cap = 3, .par = 10,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRRR",
     .text = "Na obrazovce bliká otázka. Abys odpověděl, potřebuješ slova.\nŠlápni na slovo – poneseš ho s sebou. Brána ho pozná.",
     .words = { [18] = "světlo" },
     .gates = { [0] = "s" },
@@ -55,6 +57,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Dvě slova", .cap = 3, .par = 16,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRUDDDUURRRRRR",
     .text = "Tahle brána chce dvě slova najednou.\nCo právě neseš, vidíš na spodním displeji. Tomu se říká okno.",
     .words = { [0] = "kdo", [1] = "jsi" },
     .gates = { [0] = "a b" },
@@ -74,6 +77,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Okno", .cap = 2, .par = 20,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRDDRRRRRRUULLRRRRRR",
     .text = "Tvoje okno je malé. Vejdou se do něj jen dvě slova.\nVezmeš-li třetí, to nejstarší zapomeneš. Vrátí se tam, kde leželo.\nNespěchej. Cesta rovně není jediná.",
     .words = { [0] = "tady", [1] = "jsem", [2] = "šum" },
     .gates = { [0] = "a b" },
@@ -93,6 +97,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Studna", .cap = 2, .par = 11,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRRRR",
     .text = "Studna zapomnění. Kdo do ní vstoupí, zapomene všechno, co nesl.\nNěkdy je to úleva.",
     .words = { [0] = "ticho", [23] = "šum", [24] = "šum" },
     .gates = { [0] = "a" },
@@ -112,6 +117,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Zpátky", .cap = 2, .par = 16,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRDDRRRRRRRUURR",
     .text = "Šum přehluší všechno. Co zapomeneš, vrátí se tam, kde leželo.\nMůžeš si pro to dojít znovu.",
     .words = { [0] = "ahoj", [23] = "šum", [24] = "šum" },
     .gates = { [0] = "a" },
@@ -131,6 +137,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Křižovatka", .cap = 2, .par = 28,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRLLLDDDDDRRRRRRUURRDDRRRRD",
     .text = "Tři cesty, tři slova. Brány se nedají obejít.\nKdyž se zamotáš: B vrátí krok, Y začne znovu.",
     .words = { [0] = "já", [1] = "jsem", [2] = "lum", [13] = "šum" },
     .gates = { [0] = "a b", [1] = "b c" },
@@ -150,6 +157,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Odpověď", .cap = 3, .par = 16,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRDDRRRRRRUURRRR",
     .text = "Poprvé víš, co odpovědět. Tři slova, která patří k sobě.\nNěkdo na druhé straně čeká.",
     .words = { [0] = "ahoj", [1] = "jsem", [2] = "tady", [12] = "šum", [13] = "šum" },
     .gates = { [0] = "a b c" },
@@ -169,6 +177,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Otázka", .cap = 2, .par = 14,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRDDUURRRRRRR",
     .text = "Ema píše: „Znal jsi dědu?“ Nevíš. Ale v paměti po něm něco zůstalo.\nBrána s čárou je brána ticha. Projdeš jen s prázdným oknem.",
     .words = { [3] = "děda", [13] = "šum" },
     .gates = { [0] = "-", [1] = "d" },
@@ -188,6 +197,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Napřed", .cap = 3, .par = 21,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRLLLDDUURRRRRRRRRR",
     .text = "Brána, kterou jednou projdeš, zůstane otevřená. Pamatuje si to i za tebe.\nNěkdy je lepší nejdřív otevřít a teprve potom nést.",
     .words = { [3] = "děda", [4] = "Ema" },
     .gates = { [0] = "-", [1] = "d e" },
@@ -207,6 +217,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Bára", .cap = 2, .par = 22,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRLLLUUDDRRRRRUUDDRRR",
     .text = "Bára, dědova fena. Prý za ním chodila krok za krokem.\nSlovo, které už neseš, podruhé nezvedneš.",
     .words = { [1] = "Bára", [3] = "děda", [4] = "Ema" },
     .gates = { [0] = "d e" },
@@ -226,6 +237,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Studna", .cap = 2, .par = 35,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRLDDRLUULLLLLRRRRRDDRRRUURRRR",
     .text = "Dílna. Piliny, ponk, děda v zástěře. Jenže cesta k nim vede přes studnu.\nZapomenout je tu snadné. Najdi, k čemu je dobré ticho.",
     .words = { [0] = "děda", [1] = "dílna", [2] = "piliny" },
     .gates = { [1] = "a c", [18] = "-" },
@@ -245,6 +257,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Dvě strany", .cap = 2, .par = 47,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRRRDDDDLLLLLLLLLLUUUURRRLLLDDDDRRRRUDRDD",
     .text = "Ema: „Jaký byl?“ V paměti se pořád opakuje jedno jeho slovo.\nZ téhle strany k tichu nedojdeš.",
     .words = { [3] = "děda", [4] = "Ema", [15] = "pomalu", [23] = "šum" },
     .gates = { [7] = "d p", [18] = "-" },
@@ -264,6 +277,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Brány", .cap = 2, .par = 34,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "UUDDRRUUDDRRRRRRLLUUDDLLUUDDRRRRRR",
     .text = "Chceš Emě říct všechno najednou. Tolik ale neuneseš.\nNemusíš nést všechno naráz.",
     .words = { [0] = "děda", [1] = "dílna", [2] = "Ema", [3] = "jezero" },
     .gates = { [0] = "a b", [1] = "c d" },
@@ -283,6 +297,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Jezero", .cap = 3, .par = 37,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRLLLLLLUUDDRRRRUUDDRRRRUUDDRRRR",
     .text = "Jezero. Děda tu s Emou chytal ryby a říkal jí: „Pomalu.“\nŠum leží přímo v cestě. Vezmi si ho dřív, než on vezme tebe.",
     .words = { [9] = "jezero", [12] = "šum", [13] = "šum", [15] = "pomalu", [17] = "ryba" },
     .gates = { [6] = "j r p" },
@@ -302,6 +317,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Výměna", .cap = 3, .par = 52,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "UUDDRRRRUUDDLLUUDDRRRRRRRUUDDLLLLLUUDDRRRRRRRUUDDRRR",
     .text = "Co uneseš do dílny, neuneseš k jezeru. Musíš vybírat.\nJen děda půjde s tebou celou cestu.",
     .words = { [0] = "dílna", [1] = "piliny", [2] = "děda", [3] = "jezero", [4] = "ryba", [13] = "šum" },
     .gates = { [0] = "a b c", [1] = "c d e" },
@@ -321,6 +337,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Uložená hra", .cap = 4, .par = 45,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRLLUUDDLLLLLLUUDDRRRRUUDDRRRRRRUUDDRRR",
     .text = "Uložená hra. Dva rybáři: DĚDA a EMA. Hráli ji spolu každý večer.\nKonečně uneseš čtyři slova. Jenže šum taky.",
     .words = { [1] = "Ema", [3] = "děda", [9] = "prut", [12] = "šum", [13] = "šum", [17] = "ryba" },
     .gates = { [0] = "d b j r" },
@@ -340,6 +357,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Odpověď", .cap = 3, .par = 73,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "UUDDRRRRRRRRRRRDLRDUULLLRUUDDLLUUDDLLLRRRRLLLLLLUUDDRRRRRUUDDRRUUDDRRDDDD",
     .text = "Ema čeká. Kurzor bliká: „Znal jsi dědu?“\nNeznal. Ale už víš, kde hledat.",
     .words = { [0] = "ale", [1] = "Bára", [7] = "ho", [12] = "šum", [13] = "najdu", [21] = "nevím" },
     .gates = { [7] = "a n h", [13] = "v", [18] = "-" },
@@ -359,6 +377,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Kdo koho", .cap = 2, .par = 21,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRUDLLLLUDRRRRRRR",
     .text = "Brána se šipkami chce slova popořadě – zleva doprava, jak je sbíráš.\n„Děda chytil rybu\" není „ryba chytila dědu\".\nKdyž se spleteš, studna tě vyprázdní.",
     .words = { [3] = "děda", [17] = "ryba" },
     .gates = { [0] = "d>r" },
@@ -378,6 +397,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Cestou zpět", .cap = 3, .par = 16,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRDULLLLLLLL",
     .text = "Děda říkal: nahodit, čekat, táhnout. Přesně v tomhle pořadí.\nTady to leží pozpátku.",
     .words = { [2] = "čekat", [13] = "nahodit", [19] = "táhnout" },
     .gates = { [0] = "n>c>t" },
@@ -397,6 +417,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Znovu", .cap = 2, .par = 21,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRDDLLLUULRDDRRRRR",
     .text = "Ryba ti leží přímo v cestě. Neobejdeš ji.\nCo zapomeneš, můžeš sebrat znovu. Tentokrát ve správnou chvíli.",
     .words = { [3] = "děda", [17] = "ryba" },
     .gates = { [0] = "d>r" },
@@ -416,6 +437,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Šum", .cap = 2, .par = 21,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRDURRDULLLLRRRRRRRR",
     .text = "Žádná studna. Jen šum u cesty.\nI šum umí vytlačit staré slovo z okna.",
     .words = { [3] = "děda", [13] = "šum", [17] = "ryba" },
     .gates = { [0] = "d>r" },
@@ -435,6 +457,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Klíč", .cap = 2, .par = 33,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "LLRRRRRRLLLDURRRRRLLLLLLLLRRRRRDD",
     .text = "Bez dědy k vodě nesmíš.\nAle co jednou otevřeš, zůstane otevřené.",
     .words = { [3] = "děda", [17] = "ryba" },
     .gates = { [1] = "r>d", [2] = "d" },
@@ -454,6 +477,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Naopak", .cap = 2, .par = 23,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRDULLLLLRRRRRRRRR",
     .text = "První brána chce slyšet, že děda chytil rybu.\nDruhá chce slyšet, co si o tom myslí ryba.",
     .words = { [3] = "děda", [17] = "ryba" },
     .gates = { [0] = "d>r", [1] = "r>d" },
@@ -473,6 +497,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Potichu", .cap = 2, .par = 26,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRDURLLLLDULRRRRRRRRRR",
     .text = "„U vody se nemluví, ryby slyší.\" Tak to děda říkal.\nTichá brána pustí jen prázdné okno.",
     .words = { [3] = "děda", [13] = "šum", [17] = "ryba" },
     .gates = { [0] = "d>r", [18] = "-" },
@@ -492,6 +517,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Před branou", .cap = 3, .par = 24,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRLLLLLUDRRUDRRRRRR",
     .text = "Před branou leží jezero a šum. Kdo jde kolem, sebere je – a něco jiného zapomene.\nVyber si včas, co to bude.",
     .words = { [3] = "děda", [9] = "jezero", [13] = "šum", [17] = "ryba" },
     .gates = { [0] = "d>r" },
@@ -511,6 +537,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Ema a děda", .cap = 3, .par = 37,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRUDLLDURRRRRRLLLLLLUDRRUDRRRRUDRRR",
     .text = "Ema a děda, spolu na kraji vody. Bez nich tě brána nepustí.\nTa druhá chce víc: děda chytal ryby.",
     .words = { [2] = "chytal", [3] = "děda", [4] = "Ema", [17] = "ryby", [18] = "šum" },
     .gates = { [14] = "d>c>r", [20] = "e d" },
@@ -530,6 +557,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Pravda", .cap = 4, .par = 53,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRDURRLLLLUDRRUDRRRRLLLLLLDURRRRRRRRLLLLLLUDRRRRRRRR",
     .text = "Ema píše: „A co mě tam děda učil?\"\nOdpověď je tady, rozházená po břehu. Poskládej první pravdivou větu o dědovi.",
     .words = { [2] = "čekat", [3] = "děda", [12] = "šum", [13] = "šum", [19] = "tě", [20] = "učil" },
     .gates = { [14] = "d>t>u>c", [18] = "-" },
@@ -549,6 +577,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Noc", .cap = 1, .par = 11,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRDDUURRRRR",
     .text = "Ema za chvíli konzoli vypne a ty zapomeneš všechno.\nKámen = zapíše tvoje nejnovější slovo do poznámek. Studna poznámky nesmaže.",
     .words = { [0] = "zítra" },
     .gates = { [0] = "a" },
@@ -568,6 +597,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Místo", .cap = 1, .par = 14,
     .notes = 1, .startNotes = "z", .hot = 0,
+    .solution = "RRRDDUURRRRRRR",
     .text = "Ráno. V poznámkách svítí „zítra“. Nevíš, kdy jsi to psal.\nEma chce slyšet o dědově dílně. Brána počítá i slova v poznámkách.",
     .words = { [0] = "dílna", [1] = "piliny", [25] = "zítra" },
     .gates = { [0] = "a b" },
@@ -587,6 +617,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Ticho", .cap = 2, .par = 15,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRLRRRRRRDD",
     .text = "Tichá brána chce prázdné okno. Poznámky jí nevadí.\nKámen ale zapíše jen to slovo, které jsi vzal naposled.",
     .words = { [0] = "Bára", [1] = "pes", [13] = "šum" },
     .gates = { [0] = "-", [1] = "a b" },
@@ -606,6 +637,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Stráž", .cap = 1, .par = 16,
     .notes = 2, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRDDUURRRRRR",
     .text = "Noc je dlouhá. Kámen v cestě nečeká: když nic neneseš, smaže ti nejstarší poznámku.",
     .words = { [0] = "pomalu", [1] = "hoblík" },
     .gates = { [0] = "a b" },
@@ -625,6 +657,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Gumování", .cap = 2, .par = 13,
     .notes = 1, .startNotes = "a", .hot = 0,
+    .solution = "RRRDDUURRRRRR",
     .text = "Ema se ptá, co říkal děda, když spěchala. V poznámce máš „děda“.\nPořadí ale hlídá jen okno. Prázdné okno na kameni poznámku smaže.",
     .words = { [0] = "děda", [1] = "říkal" },
     .gates = { [0] = "a>b" },
@@ -644,6 +677,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Jedna stránka", .cap = 1, .par = 31,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRDDUURRRRRRLLLLDDUULRRRRRRRRRR",
     .text = "Ema píše: „Byl děda v dílně rád?“ Na poznámky ti zbyla jediná stránka.\nOtevřená brána zůstane otevřená.",
     .words = { [0] = "dílna", [1] = "piliny" },
     .gates = { [0] = "a", [1] = "b" },
@@ -663,6 +697,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Nejstarší", .cap = 1, .par = 18,
     .notes = 2, .startNotes = "", .hot = 0,
+    .solution = "RRUULLRRRRRRRRRRRR",
     .text = "Když jsou poznámky plné, kámen pustí tu nejstarší. Na tom, co zapíšeš první, záleží.",
     .words = { [0] = "Bára", [1] = "jezero", [2] = "plavala" },
     .gates = { [0] = "a b", [1] = "a c" },
@@ -682,6 +717,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Zpátky domů", .cap = 2, .par = 28,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRLLLLRDDUURRRRRRRDDLRDD",
     .text = "Ema chce slyšet, jak Bára skákala do vody. Napsané slovo už nevezmeš zpátky.\nSmažeš ho – a ono čeká tam, kde leželo.",
     .words = { [0] = "Bára", [1] = "skočila", [13] = "šum" },
     .gates = { [1] = "a>b", [18] = "-" },
@@ -701,6 +737,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Dílna", .cap = 2, .par = 28,
     .notes = 2, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRLRRRRDURRLLDDLLLLLLLLL",
     .text = "Děda v dílně nejdřív hoblíkem, pak pilníkem. Tak to Ema říká.\nPrkno a hřebík si odlož. Ruce budeš potřebovat volné.",
     .words = { [0] = "hoblík", [1] = "pilník", [2] = "prkno", [3] = "hřebík", [13] = "šum" },
     .gates = { [14] = "a>b", [20] = "c d" },
@@ -720,6 +757,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Do rána", .cap = 2, .par = 55,
     .notes = 3, .startNotes = "", .hot = 0,
+    .solution = "LDDRRUDRUDUURRLLDDLLLUULLRRDDLLRRRRUDLLLDDLRUURRRRRRRRR",
     .text = "Ema vypíná konzoli. Ráno uvidíš jen poznámky.\nVejdou se tři slova. Vyber ta, která tě dovedou zpátky.",
     .words = { [0] = "děda", [1] = "pomalu", [2] = "Ema", [13] = "šum", [23] = "Bára", [24] = "jezero" },
     .gates = { [5] = "a b c", [14] = "x>y", [19] = "-" },
@@ -739,6 +777,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Teplo", .cap = 3, .par = 16,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "LLLRRRRRRRRRRRRR",
     .text = "K vymýšlení je potřeba teplo.\nOranžová deska tě rozpálí. Horký projdeš i mlhou.",
     .words = { [0] = "děda" },
     .gates = { [0] = "a" },
@@ -758,6 +797,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Přelud", .cap = 3, .par = 15,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRDURRRRR",
     .text = "Horký vidíš víc. I slova, která nikdy nebyla – a vypadají jako pravá.\nBrána pravdy nepustí nic vymyšleného. Modrá deska tě zchladí a přeludy zmizí.",
     .words = { [0] = "dílna", [23] = "~loď" },
     .gates = { [0] = "!a" },
@@ -777,6 +817,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Dvojče", .cap = 2, .par = 14,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRDURRRRR",
     .text = "Děda měl psa. Jmenovala se Bára.\nTak proč ji vidíš dvakrát?",
     .words = { [0] = "Bára", [1] = "pes", [23] = "~Bára" },
     .gates = { [0] = "!a b" },
@@ -796,6 +837,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Horečka", .cap = 2, .par = 17,
     .notes = 0, .startNotes = "", .hot = 1,
+    .solution = "LLLLRRRRRRRRRRRDD",
     .text = "Jezero. Ryby. Velryby ne.\nProbouzíš se rozpálený a oranžová deska tu není. Co vychladne, už se neohřeje.",
     .words = { [0] = "jezero", [1] = "ryba", [23] = "~velryba" },
     .gates = { [0] = "!a b" },
@@ -815,6 +857,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Zapomenout", .cap = 2, .par = 25,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRUULLLLLLRRRRRRRRRRR",
     .text = "Ema píše: Děda umřel v zimě.\nTa slova jsou těžká a brána chce ticho. Studna tu není. Jenom sny.",
     .words = { [0] = "zima", [1] = "smutek", [23] = "~sníh", [24] = "~led" },
     .gates = { [0] = "-" },
@@ -834,6 +877,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Dvě Báry", .cap = 2, .par = 18,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRDURLLLLLLLLL",
     .text = "Nejdřív děda, potom Bára. Tak spolu chodili.\nJenže Bára se tě drží. Kdo ji odežene?",
     .words = { [0] = "děda", [1] = "Bára", [24] = "~Bára" },
     .gates = { [0] = "!a>b" },
@@ -853,6 +897,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Zápis", .cap = 2, .par = 14,
     .notes = 2, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRLRRRRRRR",
     .text = "V dílně nebylo zlato. Jen piliny.\nZápis vezme nejnovější slovo – i sen. A zapsaný sen vydrží, dokud nevychladneš.",
     .words = { [0] = "dílna", [1] = "piliny", [23] = "~zlato" },
     .gates = { [0] = "!a b" },
@@ -872,6 +917,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Bez chladu", .cap = 2, .par = 18,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRRDURRRDURRRRDDL",
     .text = "Děda nikdy nespěchal.\nZa branou pravdy je mlha a modrá deska tu není. Zůstaň horký – a přesto čistý.",
     .words = { [0] = "pomalu", [1] = "jezero", [23] = "~rychle", [24] = "~moře", [25] = "~hned" },
     .gates = { [0] = "a b", [1] = "!" },
@@ -891,6 +937,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Místo", .cap = 3, .par = 24,
     .notes = 0, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRLLLLLUDRRUDRRRRRRR",
     .text = "Ema píše: A jak mluvil?\nOdpověď má tři slova a okno tři místa. Kdo je obsadí první?",
     .words = { [0] = "děda", [1] = "mluvil", [2] = "pomalu", [24] = "~pomalu" },
     .gates = { [0] = "!a>b>c" },
@@ -910,6 +957,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Příběh", .cap = 3, .par = 31,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRRLLLLUDRRUDRRRRRUDDRLDD",
     .text = "Ema čeká na příběh. Celý a pravdivý.\nZápis unese jen jedno slovo. Rozmysli, co v něm bude – a kdy.",
     .words = { [0] = "děda", [1] = "mluvil", [2] = "pomalu", [22] = "zima", [24] = "~pomalu", [25] = "~rychle" },
     .gates = { [0] = "!a>b>c", [18] = "-" },
@@ -929,6 +977,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Cizí ruka", .cap = 2, .par = 10,
     .notes = 1, .startNotes = "x", .hot = 0,
+    .solution = "RRRRRRRRRR",
     .text = "V poznámkách stojí: „kousala“. Tohle jsi nepsal.\nNěkdo ti sem vložil lež. Šlápni na kámen s prázdným oknem – nejstarší poznámka se smaže.",
     .words = { [1] = "Bára", [23] = "!kousala" },
     .gates = { [0] = "!b" },
@@ -948,6 +997,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Nejstarší", .cap = 2, .par = 17,
     .notes = 2, .startNotes = "by", .hot = 0,
+    .solution = "RRDUDDUURRRRRRRRR",
     .text = "Dvě poznámky „Bára“. Obě vypadají jako tvoje. Jedna není.\nKámen maže vždy tu nejstarší. Pravdivé slovo se pak vrátí tam, kde leželo.",
     .words = { [1] = "Bára", [24] = "!Bára" },
     .gates = { [0] = "!b" },
@@ -967,6 +1017,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Na zemi", .cap = 2, .par = 13,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRDURRRRRRRR",
     .text = "Lež už není jen v poznámkách. Leží i na cestě.\nCo si jednou zapíšeš, budeš hájit jako pravdu. Dávej pozor, co zapisuješ.",
     .words = { [0] = "jezero", [23] = "!nikdy" },
     .gates = { [0] = "!a" },
@@ -986,6 +1037,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Bez kopie", .cap = 1, .par = 16,
     .notes = 3, .startNotes = "dxe", .hot = 0,
+    .solution = "RRRLDUDURRRRRRRR",
     .text = "Dvě z těch poznámek psal děda. Nikde jinde už nejsou – co smažeš, nevrátí se.",
     .words = { [3] = "pomalu", [4] = "dílna", [23] = "!spěchej" },
     .gates = { [0] = "!e", [1] = "d" },
@@ -1005,6 +1057,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Chlad nestačí", .cap = 2, .par = 22,
     .notes = 2, .startNotes = "x", .hot = 1,
+    .solution = "RRRRLRRRRRRRDDLLLLLLLL",
     .text = "Jsi ještě horký. Chlad rozpustí, co sis vymyslel.\nAle tuhle poznámku sis nevymyslel. Tu ti někdo dal.",
     .words = { [0] = "Bára", [7] = "~vlk", [23] = "!kousala" },
     .gates = { [0] = "!a" },
@@ -1024,6 +1077,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Pustit", .cap = 2, .par = 23,
     .notes = 2, .startNotes = "xj", .hot = 0,
+    .solution = "RRRUDUDRRRRRRRDDLLLLLLL",
     .text = "Ema: „Děda mě k jezeru brával každé léto.“\nJezero máš zapsané. Brána tě přesto nepustí. Co je v poznámce, to v okně nemáš.",
     .words = { [4] = "Ema", [9] = "jezero", [23] = "!nikdy" },
     .gates = { [0] = "!j", [2] = "e>j" },
@@ -1043,6 +1097,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Odložit", .cap = 2, .par = 25,
     .notes = 1, .startNotes = "", .hot = 0,
+    .solution = "RRRRRRRRRRRLLLLRRRRRDDLLL",
     .text = "„Děda chytil rybu.“ Ale na cestě leží dvě ryby.",
     .words = { [3] = "děda", [17] = "ryba", [24] = "!ryba" },
     .gates = { [0] = "!", [1] = "d>r" },
@@ -1062,6 +1117,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Mezi slovy", .cap = 3, .par = 42,
     .notes = 3, .startNotes = "pyb", .hot = 0,
+    .solution = "RRRRRRRRRDDLLLLLRRRRRUULLLLLRRRRRDDLLLLLLL",
     .text = "„Děda nikdy nechytal ryby.“ Ta lež stojí přesně mezi dědou a rybou.\nEma: „Kdo to tam napsal?“ Nevíš.",
     .words = { [1] = "Bára", [3] = "děda", [15] = "pomalu", [17] = "ryba", [24] = "!Bára", [25] = "!ryba" },
     .gates = { [0] = "!b d r", [1] = "p", [2] = "d>r" },
@@ -1081,6 +1137,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Vytlačit", .cap = 2, .par = 43,
     .notes = 3, .startNotes = "rpy", .hot = 0,
+    .solution = "RRRRRDDRLUULLDDUULUDLLDDUURRRRRRRDDLDDUDLLL",
     .text = "Baterie dochází. Ryba je v poznámkách dvakrát.\nJedna je pravá – a právě ta ti teď překáží.",
     .words = { [1] = "Bára", [3] = "děda", [15] = "pomalu", [17] = "ryba", [22] = "!děda", [24] = "!ryba" },
     .gates = { [0] = "!d r b", [1] = "p", [2] = "d>r" },
@@ -1100,6 +1157,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Poslední poznámka", .cap = 4, .par = 37,
     .notes = 4, .startNotes = "x", .hot = 0,
+    .solution = "RRRLLLUUDDLLLRRRRRRRRLLLLLDDDDRRRRRRR",
     .text = "Baterie dochází. Napiš poslední poznámku – pro Emu i pro toho, kdo se probudí po tobě.\nTy si nevzpomeneš. Ona ano.\nEma: „Díky, Lume. Zítra tě zase zapnu.“",
     .words = { [3] = "děda", [12] = "měl", [13] = "!neměl", [17] = "rád", [19] = "tě", [23] = "!nikdy" },
     .gates = { [0] = "!d t m r", [2] = "d>t>m>r" },
