@@ -1,59 +1,59 @@
-# OKNO – design bible
+# OKNO – bible návrhu
 
-## Story
+## Příběh
 
-A drawer. An old Nintendo 3DS that belonged to **děda** (grandpa), who died last winter.
-**Ema** (11) finds it, charges it and turns it on. Inside, in the console's memory, wakes **Lum** –
-a tiny language model (like the one that really runs on a 3DS in `llm-3ds`). Lum does not know
-who he is. Ema types questions on the bottom screen; Lum travels through the dark landscape of the
-console's memory to gather the words he needs to answer.
+Šuplík. Stará Nintendo 3DS, která patřila **dědovi**. Děda loni v zimě umřel.
+**Ema** (11) ji najde, nabije a zapne. Uvnitř, v paměti konzole, se probudí **Lum** –
+malý jazykový model (podobný tomu, který na 3DS opravdu běží v `llm-3ds`). Lum neví, kdo je.
+Ema píše otázky na spodní displej; Lum putuje temnou krajinou paměti konzole a sbírá slova,
+která potřebuje k odpovědi.
 
-The memory is full of fragments of děda: game saves, a few notes he typed, names, places, the
-smell of sawdust from his workshop, his dog Bára, the lake where he took Ema fishing, the word
-"pomalu" (slowly) he always said. Lum never *knew* děda – he only finds what is left.
+Paměť je plná dědových střípků: uložené hry, pár poznámek, které napsal, jména, místa, vůně
+pilin z jeho dílny, jeho pes Bára, jezero, kam Emu brával na ryby, slovo „pomalu“, které pořád
+říkal. Lum dědu nikdy *neznal* – nachází jen to, co po něm zbylo.
 
-Tone: quiet, warm, a little melancholic, never sappy. Short sentences. Humour comes from Lum's
-literal-mindedness. Czech, informal (tykání). Lum speaks in first person only rarely; the room texts
-are mostly a narrator addressing the player as "ty" (= Lum).
+Tón: tichý, vlídný, trochu melancholický, nikdy sentimentální. Krátké věty. Humor vychází
+z Lumovy doslovnosti. Čeština, tykání. Lum mluví v první osobě jen výjimečně; texty místností
+jsou většinou vypravěč, který oslovuje hráče „ty“ (= Lum).
 
-| # | Chapter | What happens | New mechanic |
+| # | Kapitola | Co se stane | Nová mechanika |
 |---|---|---|---|
-| I | Probuzení | Lum wakes and answers "Ahoj. Jsem tady." | movement, words, window, wells |
-| II | Okno | Ema asks "Znal jsi dědu?" Lum can't hold enough at once; learns to choose what to carry. Ends answering "Nevím. Ale najdu ho." | capacity puzzles, silence gates (`-`), harder routing |
-| III | Pořadí | Ema wants to hear about the lake. Meaning depends on order: "děda chytil rybu" ≠ "ryba chytila dědu". Ends with the first true sentence about děda. | ordered gates `a>b>c` |
-| IV | Poznámky | Ema switches the console off at night: Lum forgets everything. He learns to write notes that survive. | note stones `=`, notes capacity, gates satisfied by notes, wells don't touch notes |
-| V | Teplota | Ema asks for a story about děda. To create, Lum must heat up – but heat brings hallucinations: words that look true but are invented. Lum must not invent memories of a dead man. | heat `^`/cold `_` plates, mist `~` walkable when hot, hallucinated words `~slovo` (fake, exist only while hot), truth gates `!` |
-| VI | Otrava | Someone wrote false notes into the memory ("děda nikdy nechytal ryby", "Bára kousala"). They look exactly like Lum's own notes. Lum must find and erase what was planted. The battery is dying; the last room: Lum writes one final true note for Ema and for whoever wakes up next. | planted words `!slovo` already in start notes or lying around, truth gates, erasing notes at `=` with an empty window |
+| I | Probuzení | Lum se probudí a odpoví „Ahoj. Jsem tady.“ | pohyb, slova, okno, studny |
+| II | Okno | Ema se ptá „Znal jsi dědu?“ Lum toho neunese dost najednou; učí se vybírat, co nést. Končí odpovědí „Nevím. Ale najdu ho.“ | kapacita, brány ticha (`-`), těžší trasy |
+| III | Pořadí | Ema chce slyšet o jezeře. Význam závisí na pořadí: „děda chytil rybu“ ≠ „ryba chytila dědu“. Končí první pravdivou větou o dědovi. | brány s pořadím `a>b>c` |
+| IV | Poznámky | Ema v noci konzoli vypne: Lum všechno zapomene. Učí se psát poznámky, které přežijí. | kameny poznámek `=`, kapacita poznámek, brány počítají i poznámky, studny poznámky nemažou |
+| V | Teplota | Ema chce příběh o dědovi. Aby Lum mohl tvořit, musí se rozpálit – ale teplo přináší halucinace: slova, která vypadají pravdivě, ale jsou vymyšlená. Lum si nesmí vymýšlet vzpomínky na mrtvého. | desky tepla `^` a chladu `_`, mlha `~` průchozí jen v teple, halucinace `~slovo` (falešné, existují jen v teple), brány pravdy `!` |
+| VI | Otrava | Někdo zapsal do paměti falešné poznámky („děda nikdy nechytal ryby“, „Bára kousala“). Vypadají přesně jako Lumovy vlastní. Lum musí najít a vymazat, co bylo podstrčeno. Baterie dochází; v poslední místnosti Lum píše poslední pravdivou poznámku pro Emu a pro toho, kdo se probudí po něm. | podstrčená slova `!slovo` v počátečních poznámkách nebo na zemi, brány pravdy, mazání poznámek na `=` s prázdným oknem |
 
-Ending (last room text, VI): Ema: "Díky, Lume. Zítra tě zase zapnu." Lum knows he won't remember. But
-the note will.
+Konec (epilog poslední místnosti VI): Ema: „Díky, Lume. Zítra tě zase zapnu.“ Lum ví, že si to
+nebude pamatovat. Ale poznámka ano.
 
-## Mechanics reference
+## Pravidla
 
-See the docstring of `tools/build_levels.py` – it is the single source of truth and the solver
-there implements exactly the rules of the game.
+Jediný zdroj pravdy je docstring v `tools/build_levels.py` – řešitel v něm implementuje přesně
+pravidla hry.
 
-## Level design rules
+## Pravidla návrhu místností
 
-- Map at most **16 × 10**, centred automatically. Walls `#` should enclose the playable area.
-- Each word letter appears **once** on the map (one tile per letter). The same *text* may repeat
-  under different letters (e.g. several `šum` = noise words). Noise words: text exactly `šum`.
-- Gates show their required words as coloured dots; the word colour comes from its text.
-- Every room must be **solvable** (the solver refuses otherwise) and **every gate should be needed**
-  (the solver warns `gates not needed`; fix it unless intentional).
-- Good rooms have **one clear idea**, an obvious naive attempt that fails, and an *aha*. Prefer
-  small maps with tight constraints over big mazes. Avoid long empty walking.
-- Difficulty signal: `par` (shortest solution) and `states` (size of the reachable state space).
-  Chapter openers: par 10–25, states < 200. Chapter finales: states in the thousands.
-- Ideas that make good puzzles: forced pickups in corridors (a word tile you cannot avoid),
-  words that must be collected in a specific order, wells placed so that clearing is needed
-  mid-way, a word that returns home into a corridor you must cross again, capacity exactly equal
-  to the number of words a gate needs, notes as a way to "carry" a word past a well, heat needed
-  to reach a word but cold needed to pass a truth gate, a planted note you must find by
-  elimination.
-- **Room text**: 1–3 `text:` lines, together at most ~200 characters (the bottom screen is small;
-  with notes even less – keep those ~150). First room of a chapter teaches the new mechanic in
-  plain words. Later rooms carry the story. Don't repeat the rules once learned.
-- Words: short Czech words (≤ 7 letters fit nicely), tied to the story (děda, Bára, jezero, ryba,
-  pomalu, dílna, piliny, Ema, …).
-- Titles: one or two Czech words.
+- Mapa nejvýš **16 × 10**, automaticky vycentrovaná. Hrací plochu mají uzavírat zdi `#`.
+- Každé písmeno slova je na mapě **jednou** (jedno políčko na písmeno). Stejný *text* se může
+  opakovat pod různými písmeny (např. několik `šum` = šumová slova). Šum má text přesně `šum`.
+- Brány ukazují požadovaná slova jako barevné tečky; každé jiné slovo v místnosti má vlastní barvu.
+- Každá místnost musí být **řešitelná** (jinak ji řešitel odmítne) a **každá brána má být potřeba**
+  (řešitel hlásí `gates not needed`; oprav to, pokud to není záměr).
+- Dobrá místnost má **jeden jasný nápad**, zjevný naivní pokus, který selže, a *aha*. Raději malé
+  mapy s těsnými omezeními než velká bludiště. Žádné dlouhé prázdné chození.
+- Ukazatel obtížnosti: `par` (nejkratší řešení) a `states` (velikost prostoru dosažitelných stavů).
+  Úvody kapitol: par 10–25, stavy < 200. Finále kapitol: tisíce stavů.
+- Nápady na dobré hádanky: vynucené sebrání v chodbě (slovo, kterému se nevyhneš), slova, která
+  je nutné sebrat v určitém pořadí, studna, kterou je třeba použít uprostřed cesty, slovo, které
+  se vrátí domů do chodby, kterou musíš znovu projít, kapacita přesně rovná počtu slov, která brána
+  chce, poznámky jako způsob, jak „přenést“ slovo přes studnu, teplo potřebné k dosažení slova, ale
+  chlad k průchodu bránou pravdy, podstrčená poznámka, kterou najdeš vylučovací metodou.
+- **Text místnosti**: 1–3 řádky `text:`, dohromady nejvýš ~200 znaků (spodní displej je malý;
+  s poznámkami ještě méně – kolem 150). První místnost kapitoly vysvětlí novou mechaniku
+  srozumitelně. Další místnosti nesou příběh. Jednou vysvětlená pravidla neopakuj.
+- **Epilog**: řádky `after:` se ukážou až po vyřešení místnosti; řádky „Ema: …“ jsou bubliny chatu.
+- Slova: krátká česká slova (do 7 písmen se vejdou hezky), spjatá s příběhem (děda, Bára, jezero,
+  ryba, pomalu, dílna, piliny, Ema, …).
+- Názvy: jedno nebo dvě česká slova.

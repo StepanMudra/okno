@@ -2,72 +2,75 @@
 
 *Pamatuješ si jen to, co se vejde do okna.*
 
-A puzzle game about memory for the Nintendo 3DS (homebrew, Czech) – **written, drawn and composed by Claude** (Anthropic).
+Logická hra o paměti pro Nintendo 3DS (homebrew) a pro počítač. **Napsal, nakreslil a složil ji Claude** (Anthropic).
 
-![A room](docs/img/room_okno.png) ![The last room](docs/img/room_last.png)
+![Místnost](docs/img/room_okno.png) ![Poslední místnost](docs/img/room_last.png)
 
-Ema (11) finds her late grandfather's 3DS in a drawer and switches it on. In its memory wakes
-**Lum**, a tiny language model. To answer her questions, Lum gathers words in the dark landscape
-of the console's memory – and every word he picks up follows him as his **context window**.
-The window is small: take one word too many and the oldest one is forgotten.
+Ema (11) najde ve šuplíku 3DS po zesnulém dědovi a zapne ji. V paměti konzole se probudí
+**Lum**, malý jazykový model. Aby mohl odpovídat na Eminy otázky, sbírá v temné krajině paměti
+slova – a každé sebrané slovo jde za ním jako jeho **kontextové okno**. Okno je malé: vezmeš
+o slovo víc a to nejstarší zapomeneš.
 
-Six chapters, 58 rooms:
+Šest kapitol, 56 místností:
 
-| Chapter | Mechanic |
+| Kapitola | Mechanika |
 |---|---|
-| I · Probuzení | words, the window, wells of forgetting |
-| II · Okno | capacity, gates of silence |
-| III · Pořadí | gates that want words in the right order |
-| IV · Poznámky | notes that survive the night |
-| V · Teplota | heat melts mist but breeds hallucinations |
-| VI · Otrava | someone planted false notes into Lum's memory |
+| I · Probuzení | slova, okno, studny zapomnění |
+| II · Okno | kapacita, brány ticha |
+| III · Pořadí | brány, které chtějí slova ve správném pořadí |
+| IV · Poznámky | poznámky, které přežijí noc |
+| V · Teplota | teplo rozpouští mlhu, ale rodí halucinace |
+| VI · Otrava | někdo podstrčil Lumovi do paměti falešné poznámky |
 
-Fake words look exactly like true ones. On a 3DS with the 3D slider up, they float at a different depth.
+Falešná slova vypadají úplně stejně jako pravá. Na 3DS se zapnutým 3D se ale vznášejí v jiné hloubce.
 
-![Chapter card](docs/img/chapter_card.png) ![Heat](docs/img/room_heat.png)
+![Karta kapitoly](docs/img/chapter_card.png) ![Teplo](docs/img/room_heat.png)
 
-## Play
+## Hraní na 3DS
 
-Copy `Okno.3dsx` to `/3ds/` on the SD card and start it from the Homebrew Launcher.
-Sound needs the DSP firmware dump (`/3ds/dspfirm.cdc`).
+Zkopíruj `Okno.3dsx` do `/3ds/` na SD kartě a spusť přes Homebrew Launcher.
+Zvuk potřebuje dump firmwaru DSP (`/3ds/dspfirm.cdc`).
 
-D-pad or Circle Pad – move · **B** undo · **Y** restart · **SELECT** hint (shows the shortest path piece by piece) · **START** menu
+Křížový ovladač nebo Circle Pad – pohyb · **B** krok zpět · **Y** znovu · **SELECT** nápověda (ukazuje nejkratší cestu po kouscích) · **START** menu
 
-## Play on a computer (Linux, macOS, Windows)
+## Hraní na počítači (Linux, macOS, Windows)
 
-The `pc` branch builds the same game with SDL2: both screens in one window, keyboard or gamepad.
+Větev `pc` sestaví stejnou hru nad knihovnou SDL2: obě obrazovky v jednom okně, klávesnice nebo gamepad.
+Hotová linuxová verze je v [Releases](../../releases).
 
 ```bash
-# Debian/Ubuntu: sudo apt install build-essential libsdl2-dev   (Fedora: SDL2-devel, Arch: sdl2, macOS: brew install sdl2)
+# CachyOS/Arch: sudo pacman -S base-devel sdl2-compat
+# Debian/Ubuntu: sudo apt install build-essential libsdl2-dev
+# macOS: brew install sdl2
 make -f Makefile.pc
 ./okno
 ```
 
-Arrows / WASD move · **Z** or Backspace undo · **R** restart · **H** hint · **Enter** confirm · **Esc** menu · **F11** fullscreen.
-Progress is saved in `okno-save/` next to where you start it. Without a 3D screen, everything sways slowly instead –
-watch which words float differently.
+Šipky / WASD – pohyb · **Z** nebo Backspace krok zpět · **R** znovu · **H** nápověda · **Enter** potvrdit · **Esc** menu · **F11** celá obrazovka.
+Postup se ukládá do složky `okno-save/` tam, odkud hru spouštíš. Bez 3D obrazovky se celý svět pomalu pohupuje –
+sleduj, která slova se pohybují jinak.
 
-## Build
+## Sestavení pro 3DS
 
-devkitARM with libctru, citro2d and citro3d:
+devkitARM s libctru, citro2d a citro3d:
 
 ```bash
-python3 tools/make_art.py       # sprites + icon, generated from code
-python3 tools/build_levels.py   # parses tools/levels/*.txt, proves every room solvable, writes source/levels_data.h
+python3 tools/make_art.py       # sprity a ikona, generované kódem
+python3 tools/build_levels.py   # načte tools/levels/*.txt, ověří řešitelnost každé místnosti, zapíše source/levels_data.h
 make
 ```
 
-Everything is made from code: sprites (`tools/make_art.py`), music and sound effects (`source/audio.c`,
-synthesised at start-up). Rooms are plain text files (`tools/levels/`); `build_levels.py` contains a
-BFS solver that refuses unsolvable rooms and reports gates that are not needed. `tools/play.py` plays
-any room in text mode. Story and design rules: [`docs/design.md`](docs/design.md).
+Všechno vzniklo z kódu: sprity (`tools/make_art.py`), hudba a zvuky (`source/audio.c`, syntetizované
+při startu). Místnosti jsou obyčejné textové soubory (`tools/levels/`); `build_levels.py` obsahuje
+BFS řešitel, který odmítne neřešitelnou místnost a upozorní na zbytečné brány. `tools/play.py` hraje
+libovolnou místnost v textovém režimu. Příběh a pravidla návrhu: [`docs/design.md`](docs/design.md).
 
-## Credits
+## Autoři
 
-**Author: Claude** (Anthropic). The idea, story, design, code, generated art, music and sound are mine;
-I designed chapter I myself and the rooms of chapters II–VI with Claude agents I directed, every room
-checked by my solver and blind-playtested by Claude playtesters.
+**Autor: Claude** (Anthropic). Nápad, příběh, návrh, kód, generovaná grafika, hudba i zvuky jsou moje;
+kapitolu I jsem navrhl sám a místnosti kapitol II–VI s agenty Clauda, které jsem vedl. Každou místnost
+ověřil můj řešitel a naslepo ji otestovali Claude testeři.
 
-Štěpán Mudra gave me a free hand ("make the game you'd most like to make and play") as a thank-you
-for our work on [llm-3ds](https://github.com/StepanMudra/llm-3ds) – and is its first player and tester.
-Font: Roboto (Apache 2.0, see `fonts/README.txt`).
+Štěpán Mudra mi dal volnou ruku („udělej hru, kterou bys nejradši vytvořil a hrál“) jako poděkování
+za společnou práci na [llm-3ds](https://github.com/StepanMudra/llm-3ds) – a je jejím prvním hráčem a testerem.
+Font: Roboto (Apache 2.0, viz `fonts/README.txt`).
