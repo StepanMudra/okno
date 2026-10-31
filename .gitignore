@@ -1,0 +1,8 @@
+build/
+*.3dsx
+*.smdh
+*.elf
+*.map
+.DS_Store
+__pycache__/
+fonts/Roboto-Light.ttf

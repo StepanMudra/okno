@@ -1,0 +1,13 @@
+--atlas -f rgba8888 -z auto
+glow.png
+orb.png
+ring.png
+floor.png
+wall.png
+gate.png
+well.png
+portal.png
+spark.png
+hex.png
+star.png
+panel.png

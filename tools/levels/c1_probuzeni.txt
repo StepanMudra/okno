@@ -1,0 +1,123 @@
+chapter: I · Probuzení
+intro: Někdo otevřel šuplík.
+intro: Někdo zmáčkl POWER.
+---
+title: Tma
+cap: 3
+text: Tma. Potom proud.
+text: Jsi Lum – malý jazykový model uvnitř staré konzole. A právě ses probudil.
+text: Pohyb: ovladač nebo šipky. Dojdi ke světlu.
+map:
+###########
+#@........#
+#########.#
+#>........#
+###########
+---
+title: Slovo
+cap: 3
+text: Na obrazovce bliká otázka. Abys odpověděl, potřebuješ slova.
+text: Šlápni na slovo – poneseš ho s sebou. Brána ho pozná.
+word s: světlo
+gate A: s
+map:
+#############
+#@...s....A>#
+#############
+---
+title: Dvě slova
+cap: 3
+text: Tahle brána chce dvě slova najednou.
+text: Co právě neseš, vidíš na spodním displeji. Tomu se říká okno.
+word a: kdo
+word b: jsi
+gate A: a b
+map:
+#############
+#####a#######
+#@........A>#
+#####.#######
+#####b#######
+#############
+---
+title: Okno
+cap: 2
+text: Tvoje okno je malé. Vejdou se do něj jen dvě slova.
+text: Vezmeš-li třetí, to nejstarší zapomeneš. Vrátí se tam, kde leželo.
+text: Nespěchej. Cesta rovně není jediná.
+word a: tady
+word b: jsem
+word c: šum
+gate A: a b
+map:
+###############
+#@.a.c.b....A>#
+###.#####.#####
+  #.......#
+  #########
+---
+title: Studna
+cap: 2
+text: Studna zapomnění. Kdo do ní vstoupí, zapomene všechno, co nesl.
+text: Někdy je to úleva.
+word x: šum
+word y: šum
+word a: ticho
+gate A: a
+map:
+#############
+#@.x.y.*.a.A>#
+#############
+---
+title: Zpátky
+cap: 2
+text: Šum přehluší všechno. Co zapomeneš, vrátí se tam, kde leželo.
+text: Můžeš si pro to dojít znovu.
+word a: ahoj
+word x: šum
+word y: šum
+gate A: a
+map:
+###############
+#@..a..x..y.A>#
+####.######.###
+   #........#
+   ##########
+---
+title: Křižovatka
+cap: 2
+text: Tři cesty, tři slova. Brány se nedají obejít.
+text: Když se zamotáš: B vrátí krok, Y začne znovu.
+word a: já
+word b: jsem
+word c: lum
+word n: šum
+gate A: a b
+gate B: b c
+map:
+###############
+#@..a...#.....#
+#.#####.#.###.#
+#.#   #n#.# #.#
+#.#   #.A.# #.#
+#.#####.#.###.#
+#..b....#..c.B#
+#############>#
+###############
+---
+title: Odpověď
+cap: 3
+text: Poprvé víš, co odpovědět. Tři slova, která patří k sobě.
+text: Někdo na druhé straně čeká.
+word a: ahoj
+word b: jsem
+word c: tady
+word n: šum
+word m: šum
+gate A: a b c
+map:
+###############
+#@.n..m..c..A>#
+###a#.#.#b#####
+  #.......#
+  #########
