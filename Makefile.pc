@@ -1,12 +1,12 @@
-# OKNO for Linux, macOS and Windows (MSYS2/MinGW): needs SDL2 (Debian/Ubuntu: sudo apt install libsdl2-dev).
+# OKNO for Linux, macOS and Windows (MSYS2/MinGW): needs SDL2 >= 2.0.18 (Debian/Ubuntu: sudo apt install libsdl2-dev).
 #   make -f Makefile.pc        -> ./okno
 CC      ?= cc
 CFLAGS  ?= -O2 -Wall
-CFLAGS  += -DPC -Ipc -Isource $(shell sdl2-config --cflags)
-LDLIBS  += $(shell sdl2-config --libs) -lm
+OKNO_CFLAGS = -DPC -Ipc -Isource $(shell sdl2-config --cflags)
+OKNO_LIBS   = $(shell sdl2-config --libs) -lm
 
 okno: source/main.c source/audio.c pc/platform.c source/levels_data.h pc/sprites.h pc/sprites_data.h pc/font_data.h
-	$(CC) $(CFLAGS) -o $@ source/main.c source/audio.c pc/platform.c $(LDLIBS)
+	$(CC) $(CFLAGS) $(OKNO_CFLAGS) -o $@ source/main.c source/audio.c pc/platform.c $(OKNO_LIBS) $(LDLIBS)
 
 clean:
 	$(RM) okno

@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
-      - run: make -f Makefile.pc CFLAGS="-O2 -Wall"
+      - run: make -f Makefile.pc
       - run: |
           mkdir -p okno-linux
           cp okno okno-linux/
