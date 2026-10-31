@@ -205,7 +205,8 @@ static float gateOpenAnim[26];    // 0..1 dissolve
 static float shake, bumpGate;     // feedback
 static int bumpLetter = -1;
 static int faceX = 1, faceY = 0;  // eyes direction
-static int hintSteps;            // how much of the solution is shown
+static int hintSteps;            // how many steps of hintPath are shown
+static char hintPath[512];       // shortest path from the current state (U/D/L/R)
 static char message[160];
 static float messageTime;
 static float roomTime;
@@ -400,15 +401,122 @@ static void forget_word(int w, V2 from) {
 	wordReturn[w] = 0.7f;
 }
 
-static void remove_from_window(int i) {
-	memmove(st.win + i, st.win + i + 1, st.nwin - i - 1);
-	memmove(segPos + i, segPos + i + 1, (st.nwin - i - 1) * sizeof(V2));
-	st.nwin--;
+
+// The rules of the game in one place (tools/build_levels.py mirrors them).
+// Returns 0 blocked, 1 moved, 2 reached the exit. No side effects besides *s.
+static int sim_step(State* s, int dx, int dy) {
+	int nx = s->x + dx, ny = s->y + dy;
+	if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) return 0;
+	char c = grid[ny][nx];
+	if (c == '#' || c == ' ' || (c == '~' && !s->hot)) return 0;
+	int gate = (c >= 'A' && c <= 'Z') ? c - 'A' : -1;
+	if (gate >= 0 && !(s->open & (1u << gate))) {
+		if (!satisfied(&req[gate], s)) return 0;
+		s->open |= 1u << gate;
+	}
+	s->x = nx;
+	s->y = ny;
+	s->moves++;
+	if (c >= 'a' && c <= 'z' && word_present(s, c - 'a')) {
+		if (s->nwin == L->cap) memmove(s->win, s->win + 1, --s->nwin);
+		s->win[s->nwin++] = c - 'a';
+	} else if (c == '*') {
+		s->nwin = 0;
+	} else if (c == '=' && L->notes > 0) {
+		if (s->nwin) {
+			int w = s->win[--s->nwin];
+			if (s->nnotes == L->notes) memmove(s->notes, s->notes + 1, --s->nnotes);
+			s->notes[s->nnotes++] = w;
+		} else if (s->nnotes) {
+			memmove(s->notes, s->notes + 1, --s->nnotes);
+		}
+	} else if (c == '^') {
+		s->hot = 1;
+	} else if (c == '_' && s->hot) {
+		s->hot = 0;
+		int n = 0;
+		for (int i = 0; i < s->nwin; i++)
+			if (!is_halluc(s->win[i])) s->win[n++] = s->win[i];
+		s->nwin = n;
+		n = 0;
+		for (int i = 0; i < s->nnotes; i++)
+			if (!is_halluc(s->notes[i])) s->notes[n++] = s->notes[i];
+		s->nnotes = n;
+	}
+	return c == '>' ? 2 : 1;
 }
 
-static void remove_from_notes(int i) {
-	memmove(st.notes + i, st.notes + i + 1, st.nnotes - i - 1);
-	st.nnotes--;
+// --- breadth-first search from any state: the hint knows the way from where Lum stands ---
+
+#define SOLVE_BITS 17
+#define SOLVE_SIZE (1 << SOLVE_BITS)
+
+typedef struct {
+	u64 a, b;     // packed state
+	s32 parent;   // table index, -1 for the start
+	u8 dir, used;
+} SolveSlot;
+
+static SolveSlot* solveTable;
+static State* solveStates;
+static s32* solveQueue;
+
+static void pack(const State* s, u64* a, u64* b) {
+	*a = (u64)s->x | (u64)s->y << 4 | (u64)s->nwin << 8 | (u64)s->hot << 12 | (u64)s->nnotes << 13 |
+		(u64)s->open << 16;
+	*b = 0;
+	for (int i = 0; i < s->nwin; i++) *b |= (u64)(s->win[i] + 1) << (5 * i);
+	for (int i = 0; i < s->nnotes; i++) *b |= (u64)(s->notes[i] + 1) << (40 + 5 * i);
+}
+
+// Returns the length of the shortest path to the exit (written to path), -1 if there is none,
+// -2 if the search got too big.
+static int solve_from(const State* start, char* path, int maxLen) {
+	if (!solveTable) {
+		solveTable = malloc(SOLVE_SIZE * sizeof(SolveSlot));
+		solveStates = malloc(SOLVE_SIZE * sizeof(State));
+		solveQueue = malloc(SOLVE_SIZE * sizeof(s32));
+		if (!solveTable || !solveStates || !solveQueue) return -2;
+	}
+	memset(solveTable, 0, SOLVE_SIZE * sizeof(SolveSlot));
+	static const int DX[4] = { 0, 0, -1, 1 }, DY[4] = { -1, 1, 0, 0 };
+	static const char DIRCH[4] = { 'U', 'D', 'L', 'R' };
+	int head = 0, tail = 0, count = 0;
+
+	u64 a, b;
+	pack(start, &a, &b);
+	u32 h = (u32)((a * 0x9E3779B97F4A7C15ull) ^ (b * 0xC2B2AE3D27D4EB4Full)) >> (32 - SOLVE_BITS);
+	solveTable[h] = (SolveSlot){ a, b, -1, 0, 1 };
+	solveStates[h] = *start;
+	solveQueue[tail++] = h;
+	while (head < tail) {
+		s32 cur = solveQueue[head++];
+		for (int d = 0; d < 4; d++) {
+			State n = solveStates[cur];
+			int r = sim_step(&n, DX[d], DY[d]);
+			if (!r) continue;
+			if (r == 2) {
+				int len = 1;
+				for (s32 i = cur; solveTable[i].parent >= 0; i = solveTable[i].parent) len++;
+				if (len > maxLen) return -2;
+				path[len] = 0;
+				path[len - 1] = DIRCH[d];
+				int k = len - 2;
+				for (s32 i = cur; solveTable[i].parent >= 0; i = solveTable[i].parent) path[k--] = DIRCH[solveTable[i].dir];
+				return len;
+			}
+			pack(&n, &a, &b);
+			u32 slot = (u32)((a * 0x9E3779B97F4A7C15ull) ^ (b * 0xC2B2AE3D27D4EB4Full)) >> (32 - SOLVE_BITS);
+			while (solveTable[slot].used && (solveTable[slot].a != a || solveTable[slot].b != b))
+				slot = (slot + 1) & (SOLVE_SIZE - 1);
+			if (solveTable[slot].used) continue;
+			if (++count > SOLVE_SIZE * 3 / 4) return -2;
+			solveTable[slot] = (SolveSlot){ a, b, cur, d, 1 };
+			solveStates[slot] = n;
+			solveQueue[tail++] = slot;
+		}
+	}
+	return -1;
 }
 
 // returns: 0 blocked, 1 moved, 2 reached exit
@@ -416,118 +524,99 @@ static int try_move(int dx, int dy) {
 	faceX = dx;
 	faceY = dy;
 	int nx = st.x + dx, ny = st.y + dy;
-	if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) return 0;
-	char c = grid[ny][nx];
-	if (c == '#' || c == ' ' || (c == '~' && !st.hot)) {
-		shake = 0.15f;
-		audio_play(SND_STEP);
-		return 0;
-	}
-	int gate = (c >= 'A' && c <= 'Z') ? c - 'A' : -1;
-	if (gate >= 0 && !(st.open & (1u << gate))) {
-		if (!satisfied(&req[gate], &st)) {
-			char m[160];
-			const Req* r = &req[gate];
-			Req plain = *r;
-			plain.truth = false;
-			if (r->truth && satisfied(&plain, &st)) {
-				snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
-			} else if (r->kind == REQ_EMPTY) {
-				snprintf(m, sizeof m, "Brána ticha: projdeš jen s prázdným oknem.");
-			} else if (r->n == 0) {
-				snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
-			} else {
-				int n = snprintf(m, sizeof m, r->kind == REQ_ORDERED ? "Brána chce v pořadí: " : "Brána chce: ");
-				for (int i = 0; i < r->n && n < (int)sizeof m - 20; i++)
-					n += snprintf(m + n, sizeof m - n, "%s%s", i ? (r->kind == REQ_ORDERED ? " › " : " + ") : "",
-						wtext(r->w[i]));
-			}
-			set_message(m);
-			shake = 0.25f;
-			bumpLetter = gate;
-			bumpGate = 0.4f;
-			audio_play(SND_BUMP);
+	State next = st;
+	int result = sim_step(&next, dx, dy);
+	if (!result) {
+		int gate = -1;
+		if (nx >= 0 && ny >= 0 && nx < GW && ny < GH && grid[ny][nx] >= 'A' && grid[ny][nx] <= 'Z')
+			gate = grid[ny][nx] - 'A';
+		if (gate < 0) {
+			shake = 0.15f;
+			audio_play(SND_STEP);
 			return 0;
 		}
+		char m[160];
+		const Req* r = &req[gate];
+		Req plain = *r;
+		plain.truth = false;
+		if (r->truth && satisfied(&plain, &st)) {
+			snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
+		} else if (r->kind == REQ_EMPTY) {
+			snprintf(m, sizeof m, "Brána ticha: projdeš jen s prázdným oknem.");
+		} else if (r->n == 0) {
+			snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
+		} else {
+			int n = snprintf(m, sizeof m, r->kind == REQ_ORDERED ? "Brána chce v pořadí: " : "Brána chce: ");
+			for (int i = 0; i < r->n && n < (int)sizeof m - 20; i++)
+				n += snprintf(m + n, sizeof m - n, "%s%s", i ? (r->kind == REQ_ORDERED ? " › " : " + ") : "",
+					wtext(r->w[i]));
+		}
+		set_message(m);
+		shake = 0.25f;
+		bumpLetter = gate;
+		bumpGate = 0.4f;
+		audio_play(SND_BUMP);
+		return 0;
 	}
 
 	push_undo();
-	if (gate >= 0 && !(st.open & (1u << gate))) {
-		st.open |= 1u << gate;
-		V2 p = tile_px(nx, ny);
-		emit(p.x, p.y, PALETTE[0], 40, 90, 1.0f, 1.2f);
-		audio_play(SND_GATE);
-	}
-	st.x = nx;
-	st.y = ny;
-	st.moves++;
+	State prev = st;
+	st = next;
+	char c = grid[ny][nx];
+	V2 p = tile_px(nx, ny);
 	for (int i = TRAIL_HIST - 1; i > 0; i--) hist[i] = hist[i - 1];
 	hist[0] = (V2){ nx, ny };
 
-	if (c >= 'a' && c <= 'z' && word_present(&st, c - 'a')) {
-		int w = c - 'a';
-		if (st.nwin == L->cap) {
-			forget_word(st.win[0], segPos[0]);
-			remove_from_window(0);
-			audio_play(SND_FORGET);
-		}
-		st.win[st.nwin] = w;
-		segPos[st.nwin] = (V2){ nx, ny };
-		st.nwin++;
-		Col col = word_color(wtext(w));
-		V2 p = tile_px(nx, ny);
-		emit(p.x, p.y, col, 24, 70, 0.8f, 1.0f);
+	// the trail keeps the rendered positions of words that stay in the window
+	V2 oldSeg[MAXCAP];
+	memcpy(oldSeg, segPos, sizeof oldSeg);
+	bool picked = false;
+	for (int i = 0; i < st.nwin; i++) {
+		int j = 0;
+		while (j < prev.nwin && prev.win[j] != st.win[i]) j++;
+		segPos[i] = j < prev.nwin ? oldSeg[j] : (V2){ nx, ny };
+		picked |= j == prev.nwin && !in_notes(&prev, st.win[i]);
+	}
+	// everything held before and not now flies home (or dissolves)
+	bool forgot = false;
+	for (int i = 0; i < prev.nwin; i++)
+		if (!held(&st, prev.win[i])) forget_word(prev.win[i], oldSeg[i]), forgot = true;
+	for (int i = 0; i < prev.nnotes; i++)
+		if (!held(&st, prev.notes[i])) forget_word(prev.notes[i], (V2){ nx, ny }), forgot = true;
+
+	if (st.open != prev.open) {
+		emit(p.x, p.y, PALETTE[0], 40, 90, 1.0f, 1.2f);
+		audio_play(SND_GATE);
+	}
+	if (picked) {
+		int w = st.win[st.nwin - 1];
+		emit(p.x, p.y, word_color(wtext(w)), 24, 70, 0.8f, 1.0f);
 		audio_play(SND_PICK0 + (w % 5));
-	} else if (c == '*') {
-		if (st.nwin) {
-			for (int i = 0; i < st.nwin; i++) forget_word(st.win[i], segPos[i]);
-			st.nwin = 0;
-			V2 p = tile_px(nx, ny);
-			emit(p.x, p.y, (Col){ 0.6f, 0.5f, 1.0f }, 40, 60, 1.2f, 1.2f);
-			audio_play(SND_WELL);
-		}
-	} else if (c == '=' && L->notes > 0) {
-		V2 p = tile_px(nx, ny);
-		if (st.nwin) {
-			// write the newest word into the notes
-			int w = st.win[st.nwin - 1];
-			remove_from_window(st.nwin - 1);
-			if (st.nnotes == L->notes) {
-				forget_word(st.notes[0], (V2){ nx, ny });
-				remove_from_notes(0);
-			}
-			st.notes[st.nnotes++] = w;
-			emit(p.x, p.y, (Col){ 0.7f, 1.0f, 0.8f }, 30, 60, 1.0f, 1.0f);
-			audio_play(SND_GATE);
-		} else if (st.nnotes) {
-			// empty-handed: erase the oldest note
-			forget_word(st.notes[0], (V2){ nx, ny });
-			remove_from_notes(0);
-			audio_play(SND_FORGET);
-		}
-	} else if (c == '^' && !st.hot) {
-		st.hot = 1;
-		V2 p = tile_px(nx, ny);
-		emit(p.x, p.y, (Col){ 1.0f, 0.5f, 0.3f }, 50, 90, 1.2f, 1.2f);
+		if (forgot) audio_play(SND_FORGET);
+	} else if (c == '*' && prev.nwin) {
+		emit(p.x, p.y, (Col){ 0.6f, 0.5f, 1.0f }, 40, 60, 1.2f, 1.2f);
 		audio_play(SND_WELL);
-	} else if (c == '_' && st.hot) {
-		st.hot = 0;
-		// hallucinations dissolve when the mind cools down
-		for (int i = st.nwin - 1; i >= 0; i--)
-			if (is_halluc(st.win[i])) {
-				forget_word(st.win[i], segPos[i]);
-				remove_from_window(i);
-			}
-		for (int i = st.nnotes - 1; i >= 0; i--)
-			if (is_halluc(st.notes[i])) remove_from_notes(i);
-		V2 p = tile_px(nx, ny);
-		emit(p.x, p.y, (Col){ 0.4f, 0.8f, 1.0f }, 50, 90, 1.2f, 1.2f);
+	} else if (c == '=' && L->notes > 0 && (prev.nwin || prev.nnotes)) {
+		emit(p.x, p.y, (Col){ 0.7f, 1.0f, 0.8f }, 30, 60, 1.0f, 1.0f);
+		audio_play(prev.nwin ? SND_GATE : SND_FORGET);
+	} else if (st.hot != prev.hot) {
+		emit(p.x, p.y, st.hot ? (Col){ 1.0f, 0.5f, 0.3f } : (Col){ 0.4f, 0.8f, 1.0f }, 50, 90, 1.2f, 1.2f);
 		audio_play(SND_WELL);
-	} else {
+	} else if (st.open == prev.open) {
 		audio_play(SND_STEP);
 	}
-	if (c == '>') return 2;
-	return 1;
+
+	// following the hint consumes it; leaving the path drops it
+	if (hintSteps > 0) {
+		char d = dy < 0 ? 'U' : dy > 0 ? 'D' : dx < 0 ? 'L' : 'R';
+		if (hintPath[0] == d) {
+			memmove(hintPath, hintPath + 1, strlen(hintPath));
+			hintSteps--;
+		} else {
+			hintSteps = 0;
+		}
+	}
+	return result;
 }
 
 static bool word_on_floor(int w) { return word_present(&st, w) && wordReturn[w] <= 0; }
@@ -682,13 +771,10 @@ static void draw_room(void) {
 		}
 
 	blend_add();
-	// hint: the start of the shortest path as footprints, with a ghost walking it
+	// hint: the next steps of the shortest path from where Lum stands, with a ghost walking them
 	if (hintSteps > 0) {
-		const char* sol = L->solution;
-		int x = 0, y = 0;
-		for (int yy = 0; yy < GH; yy++)
-			for (int xx = 0; xx < GW; xx++)
-				if (L->map[yy][xx] == '@') { x = xx; y = yy; }
+		const char* sol = hintPath;
+		int x = st.x, y = st.y;
 		float walk = fmodf(timeSec * 4, hintSteps + 6);
 		for (int i = 0; i < hintSteps && sol[i]; i++) {
 			int dx = sol[i] == 'L' ? -1 : sol[i] == 'R' ? 1 : 0, dy = sol[i] == 'U' ? -1 : sol[i] == 'D' ? 1 : 0;
@@ -1201,12 +1287,11 @@ static void update_play(u32 down, u32 held, float dt) {
 	if (down & KEY_A && roomTime < 30) roomTime = 30;  // finish typing
 	if (down & KEY_B) {
 		if (pop_undo()) audio_play(SND_FORGET);
+		hintSteps = 0;
 		return;
 	}
 	if (down & KEY_Y) {
-		int keepHint = hintSteps;
 		load_level(levelIdx);
-		hintSteps = keepHint;
 		roomTime = 30;
 		audio_play(SND_MENU);
 		return;
@@ -1216,13 +1301,18 @@ static void update_play(u32 down, u32 held, float dt) {
 		return;
 	}
 	if (down & KEY_SELECT) {
-		int par = strlen(L->solution);
-		if (hintSteps < par) {
-			hintSteps += (par + 3) / 4;
-			if (hintSteps > par) hintSteps = par;
+		// each press reveals the next few steps from where Lum stands
+		int len = hintSteps ? (int)strlen(hintPath) : solve_from(&st, hintPath, sizeof hintPath - 1);
+		if (len == -1) {
+			hintSteps = 0;
+			set_message("Odsud už to nejde. Vrať se pár kroků zpět (" BTN_B "), nebo začni znovu (" BTN_Y ").");
+		} else if (len < 0) {
+			set_message("Na tuhle místnost je nápověda moc těžká. Zkus začít znovu (" BTN_Y ").");
+		} else {
+			hintSteps = hintSteps + 4 < len ? hintSteps + 4 : len;
+			set_message(hintSteps < len ? "Nápověda: další kroky odsud. Další kus ukáže " BTN_SELECT " znovu."
+				: "Nápověda: celá cesta odsud až k východu.");
 		}
-		set_message(hintSteps >= par ? "Nápověda: celá nejkratší cesta. Začni od začátku (" BTN_Y ") a jdi po stopách."
-			: "Nápověda: začátek nejkratší cesty. Další kus ukáže " BTN_SELECT " znovu. Začni od začátku (" BTN_Y ").");
 		audio_play(SND_MENU);
 		return;
 	}
@@ -1284,6 +1374,26 @@ int main(void) {
 	init_backdrop();
 	load_save();
 	load_script();
+#ifdef PC
+	// OKNO_SELFTEST=1 ./okno : the C rules and solver must agree with tools/build_levels.py
+	if (getenv("OKNO_SELFTEST")) {
+		int bad = 0;
+		for (int i = 0; i < LEVEL_COUNT; i++) {
+			load_level(i);
+			State s = st;
+			int r = 1;
+			for (const char* m = L->solution; *m && r == 1; m++)
+				r = sim_step(&s, *m == 'L' ? -1 : *m == 'R' ? 1 : 0, *m == 'U' ? -1 : *m == 'D' ? 1 : 0);
+			int len = solve_from(&st, hintPath, sizeof hintPath - 1);
+			bool ok = r == 2 && len == L->par;
+			bad += !ok;
+			printf("%2d %-24s par %3d  replay %s  bfs %3d  %s\n", i, L->title, L->par, r == 2 ? "exit" : "FAIL", len,
+				ok ? "ok" : "MISMATCH");
+		}
+		printf("%s\n", bad ? "SELFTEST FAILED" : "SELFTEST OK");
+		return bad != 0;
+	}
+#endif
 	load_level(saveLevel);
 
 	u64 last = osGetTime();
