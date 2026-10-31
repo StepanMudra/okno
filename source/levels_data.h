@@ -11,6 +11,7 @@ static const ChapterDef CHAPTERS[CHAPTER_COUNT] = {
 static const LevelDef LEVELS[LEVEL_COUNT] = {
   {
     .title = "Tma", .cap = 3, .par = 18,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Tma. Potom proud.\nJsi Lum – malý jazykový model uvnitř staré konzole. A právě ses probudil.\nPohyb: ovladač nebo šipky. Dojdi ke světlu.",
     .words = {  },
     .gates = {  },
@@ -29,6 +30,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Slovo", .cap = 3, .par = 10,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Na obrazovce bliká otázka. Abys odpověděl, potřebuješ slova.\nŠlápni na slovo – poneseš ho s sebou. Brána ho pozná.",
     .words = { [18] = "světlo" },
     .gates = { [0] = "s" },
@@ -47,6 +49,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Dvě slova", .cap = 3, .par = 16,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Tahle brána chce dvě slova najednou.\nCo právě neseš, vidíš na spodním displeji. Tomu se říká okno.",
     .words = { [0] = "kdo", [1] = "jsi" },
     .gates = { [0] = "a b" },
@@ -65,6 +68,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Okno", .cap = 2, .par = 20,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Tvoje okno je malé. Vejdou se do něj jen dvě slova.\nVezmeš-li třetí, to nejstarší zapomeneš. Vrátí se tam, kde leželo.\nNespěchej. Cesta rovně není jediná.",
     .words = { [0] = "tady", [1] = "jsem", [2] = "šum" },
     .gates = { [0] = "a b" },
@@ -83,6 +87,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Studna", .cap = 2, .par = 11,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Studna zapomnění. Kdo do ní vstoupí, zapomene všechno, co nesl.\nNěkdy je to úleva.",
     .words = { [0] = "ticho", [23] = "šum", [24] = "šum" },
     .gates = { [0] = "a" },
@@ -101,6 +106,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Zpátky", .cap = 2, .par = 16,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Šum přehluší všechno. Co zapomeneš, vrátí se tam, kde leželo.\nMůžeš si pro to dojít znovu.",
     .words = { [0] = "ahoj", [23] = "šum", [24] = "šum" },
     .gates = { [0] = "a" },
@@ -119,6 +125,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Křižovatka", .cap = 2, .par = 28,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Tři cesty, tři slova. Brány se nedají obejít.\nKdyž se zamotáš: B vrátí krok, Y začne znovu.",
     .words = { [0] = "já", [1] = "jsem", [2] = "lum", [13] = "šum" },
     .gates = { [0] = "a b", [1] = "b c" },
@@ -137,6 +144,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
   },
   {
     .title = "Odpověď", .cap = 3, .par = 16,
+    .notes = 0, .startNotes = "", .hot = 0,
     .text = "Poprvé víš, co odpovědět. Tři slova, která patří k sobě.\nNěkdo na druhé straně čeká.",
     .words = { [0] = "ahoj", [1] = "jsem", [2] = "tady", [12] = "šum", [13] = "šum" },
     .gates = { [0] = "a b c" },

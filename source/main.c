@@ -24,9 +24,12 @@ typedef struct {
 	const char* title;
 	int cap, par;
 	const char* text;
-	const char* words[26];
-	const char* gates[26];
+	const char* words[26];  // "!slovo" = fake (planted), "~slovo" = hallucination (exists only when hot)
+	const char* gates[26];  // "a b" all, "a>b" ordered, "-" empty window, leading "!" = truth gate
 	const char* map[10];
+	int notes;              // capacity of the notes (0 = no notes in this room)
+	const char* startNotes; // letters already written in the notes when the room starts
+	int hot;                // starting temperature
 } LevelDef;
 
 #include "levels_data.h"
@@ -40,6 +43,7 @@ typedef struct {
 #define OX ((TOP_W - GW * TS) / 2)
 #define OY ((SCR_H - GH * TS) / 2)
 #define MAXCAP 8
+#define MAXNOTES 4
 #define UNDO_MAX 1024
 #define MAX_PARTICLES 320
 #define TRAIL_HIST 16
@@ -136,6 +140,7 @@ typedef enum { REQ_ALL, REQ_ORDERED, REQ_EMPTY } ReqKind;
 
 typedef struct {
 	ReqKind kind;
+	bool truth;  // nothing fake may be held
 	u8 n;
 	u8 w[8];
 } Req;
@@ -144,6 +149,9 @@ typedef struct {
 	s8 x, y;
 	u8 nwin;
 	u8 win[MAXCAP];
+	u8 nnotes;
+	u8 notes[MAXNOTES];
+	u8 hot;
 	u32 open;  // bit per gate letter
 	u16 moves;
 } State;
@@ -222,6 +230,11 @@ static void parse_req(int g, const char* s) {
 	Req* r = &req[g];
 	memset(r, 0, sizeof *r);
 	if (!s) return;
+	if (s[0] == '!') {
+		r->truth = true;
+		s++;
+		while (*s == ' ') s++;
+	}
 	if (strcmp(s, "-") == 0) {
 		r->kind = REQ_EMPTY;
 		return;
@@ -237,11 +250,33 @@ static bool in_window(const State* s, int w) {
 	return false;
 }
 
+static bool in_notes(const State* s, int w) {
+	for (int i = 0; i < s->nnotes; i++)
+		if (s->notes[i] == w) return true;
+	return false;
+}
+
+static bool held(const State* s, int w) { return in_window(s, w) || in_notes(s, w); }
+static bool is_fake(int w) { return L->words[w] && (L->words[w][0] == '!' || L->words[w][0] == '~'); }
+static bool is_halluc(int w) { return L->words[w] && L->words[w][0] == '~'; }
+static const char* wtext(int w) { return is_fake(w) ? L->words[w] + 1 : L->words[w]; }
+
+// the word lies on its home tile and can be picked up
+static bool word_present(const State* s, int w) {
+	return homeX[w] >= 0 && !held(s, w) && (!is_halluc(w) || s->hot);
+}
+
 static bool satisfied(const Req* r, const State* s) {
+	if (r->truth) {
+		for (int i = 0; i < s->nwin; i++)
+			if (is_fake(s->win[i])) return false;
+		for (int i = 0; i < s->nnotes; i++)
+			if (is_fake(s->notes[i])) return false;
+	}
 	if (r->kind == REQ_EMPTY) return s->nwin == 0;
 	if (r->kind == REQ_ALL) {
 		for (int i = 0; i < r->n; i++)
-			if (!in_window(s, r->w[i])) return false;
+			if (!held(s, r->w[i])) return false;
 		return true;
 	}
 	int k = 0;
@@ -290,6 +325,9 @@ static void load_level(int idx) {
 			}
 		}
 	for (int g = 0; g < 26; g++) parse_req(g, L->gates[g]);
+	for (const char* n = L->startNotes; n && *n && st.nnotes < MAXNOTES; n++)
+		if (*n >= 'a' && *n <= 'z') st.notes[st.nnotes++] = *n - 'a';
+	st.hot = L->hot;
 	undoTop = undoCount = 0;
 	message[0] = 0;
 	roomTime = 0;
@@ -306,11 +344,8 @@ static bool pop_undo(void) {
 	if (!undoCount) return false;
 	undoTop = (undoTop + UNDO_MAX - 1) % UNDO_MAX;
 	undoCount--;
-	State prev = st;
 	st = undoStack[undoTop];
-	// words that came back into the world: show them at home immediately
-	for (int i = 0; i < prev.nwin; i++)
-		if (!in_window(&st, prev.win[i])) wordReturn[prev.win[i]] = 0;
+	memset(wordReturn, 0, sizeof wordReturn);
 	for (int g = 0; g < 26; g++)
 		if (!(st.open & (1u << g))) gateOpenAnim[g] = 0;
 	playerPos = (V2){ st.x, st.y };
@@ -320,10 +355,22 @@ static bool pop_undo(void) {
 }
 
 static void forget_word(int w, V2 from) {
-	wordFly[w] = from;
-	wordReturn[w] = 0.7f;
 	V2 p = tile_px(from.x, from.y);
 	emit(p.x, p.y, NOISE, 10, 40, 0.6f, 0.8f);
+	if (homeX[w] < 0) return;  // planted words have no home: they just dissolve
+	wordFly[w] = from;
+	wordReturn[w] = 0.7f;
+}
+
+static void remove_from_window(int i) {
+	memmove(st.win + i, st.win + i + 1, st.nwin - i - 1);
+	memmove(segPos + i, segPos + i + 1, (st.nwin - i - 1) * sizeof(V2));
+	st.nwin--;
+}
+
+static void remove_from_notes(int i) {
+	memmove(st.notes + i, st.notes + i + 1, st.nnotes - i - 1);
+	st.nnotes--;
 }
 
 // returns: 0 blocked, 1 moved, 2 reached exit
@@ -333,7 +380,7 @@ static int try_move(int dx, int dy) {
 	int nx = st.x + dx, ny = st.y + dy;
 	if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) return 0;
 	char c = grid[ny][nx];
-	if (c == '#' || c == ' ') {
+	if (c == '#' || c == ' ' || (c == '~' && !st.hot)) {
 		shake = 0.15f;
 		audio_play(SND_STEP);
 		return 0;
@@ -343,13 +390,19 @@ static int try_move(int dx, int dy) {
 		if (!satisfied(&req[gate], &st)) {
 			char m[160];
 			const Req* r = &req[gate];
-			if (r->kind == REQ_EMPTY) {
+			Req plain = *r;
+			plain.truth = false;
+			if (r->truth && satisfied(&plain, &st)) {
+				snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
+			} else if (r->kind == REQ_EMPTY) {
 				snprintf(m, sizeof m, "Brána ticha: projdeš jen s prázdným oknem.");
+			} else if (r->n == 0) {
+				snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
 			} else {
 				int n = snprintf(m, sizeof m, r->kind == REQ_ORDERED ? "Brána chce v pořadí: " : "Brána chce: ");
 				for (int i = 0; i < r->n && n < (int)sizeof m - 20; i++)
-					n += snprintf(m + n, sizeof m - n, "%s%s", i ? (r->kind == REQ_ORDERED ? " → " : " + ") : "",
-						L->words[r->w[i]]);
+					n += snprintf(m + n, sizeof m - n, "%s%s", i ? (r->kind == REQ_ORDERED ? " › " : " + ") : "",
+						wtext(r->w[i]));
 			}
 			set_message(m);
 			shake = 0.25f;
@@ -373,20 +426,17 @@ static int try_move(int dx, int dy) {
 	for (int i = TRAIL_HIST - 1; i > 0; i--) hist[i] = hist[i - 1];
 	hist[0] = (V2){ nx, ny };
 
-	if (c >= 'a' && c <= 'z' && !in_window(&st, c - 'a')) {
+	if (c >= 'a' && c <= 'z' && word_present(&st, c - 'a')) {
 		int w = c - 'a';
 		if (st.nwin == L->cap) {
-			int old = st.win[0];
-			forget_word(old, segPos[0]);
-			memmove(st.win, st.win + 1, st.nwin - 1);
-			memmove(segPos, segPos + 1, (st.nwin - 1) * sizeof(V2));
-			st.nwin--;
+			forget_word(st.win[0], segPos[0]);
+			remove_from_window(0);
 			audio_play(SND_FORGET);
 		}
 		st.win[st.nwin] = w;
 		segPos[st.nwin] = (V2){ nx, ny };
 		st.nwin++;
-		Col col = word_color(L->words[w]);
+		Col col = word_color(wtext(w));
 		V2 p = tile_px(nx, ny);
 		emit(p.x, p.y, col, 24, 70, 0.8f, 1.0f);
 		audio_play(SND_PICK0 + (w % 5));
@@ -398,6 +448,43 @@ static int try_move(int dx, int dy) {
 			emit(p.x, p.y, (Col){ 0.6f, 0.5f, 1.0f }, 40, 60, 1.2f, 1.2f);
 			audio_play(SND_WELL);
 		}
+	} else if (c == '=' && L->notes > 0) {
+		V2 p = tile_px(nx, ny);
+		if (st.nwin) {
+			// write the newest word into the notes
+			int w = st.win[st.nwin - 1];
+			remove_from_window(st.nwin - 1);
+			if (st.nnotes == L->notes) {
+				forget_word(st.notes[0], (V2){ nx, ny });
+				remove_from_notes(0);
+			}
+			st.notes[st.nnotes++] = w;
+			emit(p.x, p.y, (Col){ 0.7f, 1.0f, 0.8f }, 30, 60, 1.0f, 1.0f);
+			audio_play(SND_GATE);
+		} else if (st.nnotes) {
+			// empty-handed: erase the oldest note
+			forget_word(st.notes[0], (V2){ nx, ny });
+			remove_from_notes(0);
+			audio_play(SND_FORGET);
+		}
+	} else if (c == '^' && !st.hot) {
+		st.hot = 1;
+		V2 p = tile_px(nx, ny);
+		emit(p.x, p.y, (Col){ 1.0f, 0.5f, 0.3f }, 50, 90, 1.2f, 1.2f);
+		audio_play(SND_WELL);
+	} else if (c == '_' && st.hot) {
+		st.hot = 0;
+		// hallucinations dissolve when the mind cools down
+		for (int i = st.nwin - 1; i >= 0; i--)
+			if (is_halluc(st.win[i])) {
+				forget_word(st.win[i], segPos[i]);
+				remove_from_window(i);
+			}
+		for (int i = st.nnotes - 1; i >= 0; i--)
+			if (is_halluc(st.notes[i])) remove_from_notes(i);
+		V2 p = tile_px(nx, ny);
+		emit(p.x, p.y, (Col){ 0.4f, 0.8f, 1.0f }, 50, 90, 1.2f, 1.2f);
+		audio_play(SND_WELL);
 	} else {
 		audio_play(SND_STEP);
 	}
@@ -405,7 +492,7 @@ static int try_move(int dx, int dy) {
 	return 1;
 }
 
-static bool word_on_floor(int w) { return homeX[w] >= 0 && !in_window(&st, w) && wordReturn[w] <= 0; }
+static bool word_on_floor(int w) { return word_present(&st, w) && wordReturn[w] <= 0; }
 
 // ---------------------------------------------------------------------------
 // save
@@ -486,7 +573,7 @@ static float light_at(float tx, float ty) {
 		float ex = tx - segPos[i].x, ey = ty - segPos[i].y;
 		l = fmaxf(l, 0.6f * fmaxf(0, 1 - sqrtf(ex * ex + ey * ey) / 2.5f));
 	}
-	return 0.22f + 0.78f * l;
+	return 0.38f + 0.62f * l;
 }
 
 static void draw_gate_marks(int g, V2 p, float alpha, float depth) {
@@ -498,7 +585,7 @@ static void draw_gate_marks(int g, V2 p, float alpha, float depth) {
 	float spacing = 6.5f, x0 = p.x - (r->n - 1) * spacing / 2;
 	for (int i = 0; i < r->n; i++) {
 		int w = r->w[i];
-		Col c = word_color(L->words[w]);
+		Col c = word_color(wtext(w));
 		bool have = in_window(&st, w);
 		float s = have ? 0.30f : 0.22f;
 		float pulse = have ? 1.0f : 0.55f + 0.2f * sinf(timeSec * 3 + i);
@@ -521,11 +608,16 @@ static void draw_room(void) {
 			p.x += sx;
 			float l = light_at(x, y);
 			if (c == '#') {
-				spr(sprites_wall_idx, p.x, p.y, 0.6f, 1, 0, rgba(0.30f * l, 0.36f * l, 0.62f * l, 1));
+				// walls: near-black slabs with a violet rim, raised toward the viewer
+				spr(sprites_wall_idx, p.x, p.y, 0.6f, 1, 0, rgba(0.16f * l + 0.03f, 0.13f * l + 0.03f, 0.30f * l + 0.06f, 1));
+			} else if (c == '~' && !st.hot) {
+				// uncertain wall: a cold mist that only heat can melt
+				float m = 0.6f + 0.25f * sinf(timeSec * 2 + x + y * 1.7f);
+				spr(sprites_wall_idx, p.x, p.y, 0.3f, 0.92f, 0, rgba(0.45f * l, 0.38f * l, 0.55f * l, m));
 			} else {
-				float ripple = 0.04f * sinf(timeSec * 1.3f + x * 0.7f + y * 0.9f);
+				float ripple = 0.05f * sinf(timeSec * 1.3f + x * 0.7f + y * 0.9f);
 				spr(sprites_floor_idx, p.x, p.y, 0, 1, 0,
-					rgba((0.14f + ripple) * l, (0.20f + ripple) * l, (0.42f + ripple) * l, 0.55f + 0.45f * l));
+					rgba((0.22f + ripple) * l, (0.36f + ripple) * l, (0.70f + ripple) * l, 0.6f + 0.4f * l));
 			}
 		}
 
@@ -548,6 +640,7 @@ static void draw_room(void) {
 		}
 
 	blend_add();
+	if (st.hot) C2D_DrawRectSolid(0, 0, 0.5f, TOP_W, SCR_H, rgba(0.35f, 0.12f, 0.02f, 0.18f + 0.05f * sinf(timeSec * 2)));
 	// wells and the exit glow
 	for (int y = 0; y < GH; y++)
 		for (int x = 0; x < GW; x++) {
@@ -558,6 +651,17 @@ static void draw_room(void) {
 				spr(sprites_glow_idx, p.x, p.y, 0, 0.6f, 0, rgba(0.4f, 0.3f, 1, 0.35f));
 				spr(sprites_well_idx, p.x, p.y, -0.3f, 1, -timeSec * 2.2f, rgba(0.6f, 0.5f, 1, 0.9f));
 				spr(sprites_well_idx, p.x, p.y, -0.6f, 0.7f, timeSec * 1.4f, rgba(0.4f, 0.8f, 1, 0.6f));
+			} else if (c == '=') {
+				spr(sprites_glow_idx, p.x, p.y, 0, 0.55f, 0, rgba(0.5f, 1, 0.7f, 0.35f));
+				spr(sprites_ring_idx, p.x, p.y, -0.2f, 0.62f, timeSec, rgba(0.6f, 1, 0.75f, 0.85f));
+				spr(sprites_star_idx, p.x, p.y, 0.2f, 0.8f, timeSec * 0.5f, rgba(0.8f, 1, 0.85f, 0.9f));
+			} else if (c == '^' || c == '_') {
+				Col k = c == '^' ? (Col){ 1, 0.45f, 0.2f } : (Col){ 0.3f, 0.75f, 1 };
+				float pul = 0.75f + 0.25f * sinf(timeSec * 3 + x);
+				spr(sprites_glow_idx, p.x, p.y, 0, 0.6f * pul, 0, rgba(k.r, k.g, k.b, 0.5f));
+				spr(sprites_hex_idx, p.x, p.y, 0.1f, 0.3f, c == '^' ? timeSec : -timeSec, rgba(k.r, k.g, k.b, 0.9f));
+			} else if (c == '~' && st.hot) {
+				spr(sprites_glow_idx, p.x, p.y, 0, 0.45f, 0, rgba(1, 0.5f, 0.3f, 0.12f + 0.08f * sinf(timeSec * 4 + x)));
 			} else if (c == '>') {
 				float pul = 0.8f + 0.2f * sinf(timeSec * 2.5f);
 				spr(sprites_glow_idx, p.x, p.y, 0, 1.1f * pul, 0, rgba(1, 0.85f, 0.5f, 0.45f));
@@ -569,18 +673,20 @@ static void draw_room(void) {
 	// words lying on the floor
 	for (int w = 0; w < 26; w++) {
 		if (!word_on_floor(w)) continue;
-		Col c = word_color(L->words[w]);
+		Col c = word_color(wtext(w));
 		V2 p = tile_px(homeX[w], homeY[w]);
 		p.x += sx;
 		p.y += sinf(timeSec * 2.2f + w) * 1.5f;
-		float noise = is_noise(L->words[w]) ? 0.5f + 0.5f * frand() : 1;
-		spr(sprites_glow_idx, p.x, p.y, 0.8f, 0.55f, 0, rgba(c.r, c.g, c.b, 0.45f * noise));
-		spr(sprites_orb_idx, p.x, p.y, 1.0f, 0.42f, 0, rgba(c.r, c.g, c.b, 0.95f));
+		float noise = is_noise(wtext(w)) ? 0.5f + 0.5f * frand() : 1;
+		// fakes look exactly the same – only the 3D depth gives them away
+		float d = is_fake(w) ? 2.6f : 1.0f;
+		spr(sprites_glow_idx, p.x, p.y, d - 0.2f, 0.55f, 0, rgba(c.r, c.g, c.b, 0.45f * noise));
+		spr(sprites_orb_idx, p.x, p.y, d, 0.42f, 0, rgba(c.r, c.g, c.b, 0.95f));
 	}
 	// forgotten words flying home
 	for (int w = 0; w < 26; w++) {
 		if (wordReturn[w] <= 0) continue;
-		Col c = word_color(L->words[w]);
+		Col c = word_color(wtext(w));
 		float k = 1 - wordReturn[w] / 0.7f;
 		float e = k * k * (3 - 2 * k);
 		V2 a = tile_px(wordFly[w].x, wordFly[w].y), b = tile_px(homeX[w], homeY[w]);
@@ -595,7 +701,7 @@ static void draw_room(void) {
 	V2 prev = pp;
 	for (int i = st.nwin - 1; i >= 0; i--) {
 		int w = st.win[i];
-		Col c = word_color(L->words[w]);
+		Col c = word_color(wtext(w));
 		V2 p = tile_px(segPos[i].x, segPos[i].y);
 		p.x += sx;
 		bool doomed = (st.nwin == L->cap && i == 0);
@@ -613,6 +719,15 @@ static void draw_room(void) {
 	spr(sprites_glow_idx, pp.x, pp.y, 1.9f, 0.7f * breathe, 0, rgba(1, 0.95f, 0.8f, 0.6f));
 	draw_particles();
 	blend_normal();
+	// word labels
+	for (int w = 0; w < 26; w++) {
+		if (!word_on_floor(w)) continue;
+		V2 p = tile_px(homeX[w], homeY[w]);
+		float l = light_at(homeX[w], homeY[w]);
+		Col c = word_color(wtext(w));
+		text(wtext(w), p.x + sx, p.y - 19 + sinf(timeSec * 2.2f + w) * 1.5f, 0.36f,
+			rgba(c.r, c.g, c.b, 0.25f + 0.75f * l), C2D_AlignCenter, 0, is_fake(w) ? 2.6f : 1.0f);
+	}
 	spr(sprites_orb_idx, pp.x, pp.y, 2.0f, 0.62f * breathe, 0, rgba(1, 0.97f, 0.88f, 1));
 	// eyes
 	float blink = fmodf(timeSec + levelIdx, 4.0f) < 0.12f ? 0.25f : 1;
@@ -679,19 +794,19 @@ static void draw_bottom_play(void) {
 	// the window
 	float slotW = fminf(70, (BOT_W - 40.0f) / L->cap - 6), slotH = 30;
 	float total = L->cap * (slotW + 6) - 6, x0 = (BOT_W - total) / 2, y0 = 44;
-	text("← tohle zapomeneš první", x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
+	text("‹ tohle zapomeneš první", x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
 	text("okno", x0 + total, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.8f), C2D_AlignRight, 0, 0);
 	for (int i = 0; i < L->cap; i++) {
 		float x = x0 + i * (slotW + 6);
 		bool filled = i < st.nwin;
-		Col c = filled ? word_color(L->words[st.win[i]]) : (Col){ 0.3f, 0.32f, 0.5f };
+		Col c = filled ? word_color(wtext(st.win[i])) : (Col){ 0.3f, 0.32f, 0.5f };
 		bool doomed = filled && st.nwin == L->cap && i == 0;
 		float fl = doomed ? 0.6f + 0.4f * sinf(timeSec * 9) : 1;
 		C2D_ImageTint t;
 		C2D_PlainImageTint(&t, rgba(c.r * fl, c.g * fl, c.b * fl, filled ? 0.9f : 0.35f), 1);
 		C2D_DrawImageAt(img[sprites_panel_idx], x, y0, 0.5f, &t, slotW / 64.0f, slotH / 32.0f);
 		if (filled) {
-			const char* w = L->words[st.win[i]];
+			const char* w = wtext(st.win[i]);
 			float sc = 0.6f;
 			float tw = text_width(w, sc);
 			if (tw > slotW - 8) sc *= (slotW - 8) / tw;
@@ -699,8 +814,28 @@ static void draw_bottom_play(void) {
 		}
 	}
 
-	// story / message
+	// the notes: words that survive wells and overflow
 	float ty = 92;
+	if (L->notes > 0) {
+		float nw = 64, ny = y0 + 40, nx0 = (BOT_W - (L->notes * (nw + 6) - 6)) / 2;
+		text("poznámky", nx0 - 8, ny + 4, 0.42f, rgba(0.6f, 1, 0.75f, 0.7f), C2D_AlignRight, 0, 0);
+		for (int i = 0; i < L->notes; i++) {
+			float x = nx0 + i * (nw + 6);
+			bool filled = i < st.nnotes;
+			Col c = filled ? word_color(wtext(st.notes[i])) : (Col){ 0.3f, 0.5f, 0.4f };
+			C2D_ImageTint t;
+			C2D_PlainImageTint(&t, rgba(c.r, c.g, c.b, filled ? 0.8f : 0.3f), 1);
+			C2D_DrawImageAt(img[sprites_panel_idx], x, ny, 0.5f, &t, nw / 64.0f, 22 / 32.0f);
+			if (filled) text(wtext(st.notes[i]), x + nw / 2, ny + 4, 0.48f, rgba(0.04f, 0.05f, 0.1f, 1), C2D_AlignCenter, 0, 0);
+		}
+		ty = ny + 34;
+	}
+	bool usesHeat = L->hot;
+	for (int y = 0; y < GH && !usesHeat; y++)
+		usesHeat = strchr(L->map[y], '^') || strchr(L->map[y], '~');
+	if (usesHeat)
+		text(st.hot ? "teplota: vysoká – vidíš i to, co není" : "teplota: nízká", BOT_W - 12, SCR_H - 36, 0.42f,
+			st.hot ? rgba(1, 0.6f, 0.35f, 0.9f) : rgba(0.5f, 0.8f, 1, 0.8f), C2D_AlignRight, 0, 0);
 	C2D_DrawRectSolid(12, ty - 6, 0.5f, BOT_W - 24, 1, rgba(0.4f, 0.45f, 0.8f, 0.25f));
 	if (messageTime > 0) {
 		text(message, 16, ty, 0.55f, rgba(1, 0.85f, 0.55f, fminf(1, messageTime)), 0, BOT_W - 32, 0);
@@ -778,6 +913,87 @@ static void draw_end_top(void) {
 // ---------------------------------------------------------------------------
 // update
 
+// Test autopilot: if sdmc:/3ds/Okno/script.txt exists, its keys are played back.
+// Tokens: U D L R A B Y S (start) X; wN waits N frames. Used to film the game in an emulator.
+static char* script;
+static int scriptPos, scriptWait;
+
+static void load_script(void) {
+	FILE* f = fopen(SAVE_DIR "/script.txt", "r");
+	if (!f) return;
+	if (!script) script = malloc(65536);
+	size_t n = fread(script, 1, 65535, f);
+	script[n] = 0;
+	fclose(f);
+	remove(SAVE_DIR "/script.txt");  // consumed: a new file starts a new run
+	scriptPos = scriptWait = 0;
+}
+
+static void start_level(int idx);
+static bool shotRequest;
+static int shotCount;
+
+// Writes the last shown frame of both screens as PPM files (test runs in an emulator only).
+static void save_screenshot(void) {
+	mkdir(SAVE_DIR "/shots", 0777);
+	char path[64];
+	snprintf(path, sizeof path, SAVE_DIR "/shots/%03d.ppm", shotCount++);
+	FILE* f = fopen(path, "wb");
+	if (!f) return;
+	fprintf(f, "P6\n400 480\n255\n");
+	static u8 row[400 * 3];
+	for (int y = 0; y < 480; y++) {
+		memset(row, 0, sizeof row);
+		bool top = y < 240;
+		u16 fw, fh;
+		u8* fb = gfxGetFramebuffer(top ? GFX_TOP : GFX_BOTTOM, GFX_LEFT, &fw, &fh);
+		int sy = top ? y : y - 240, w = top ? 400 : 320, ox = top ? 0 : 40;
+		for (int x = 0; x < w; x++) {
+			u8* px = fb + ((x * 240) + (239 - sy)) * 3;
+			row[(ox + x) * 3 + 0] = px[2];
+			row[(ox + x) * 3 + 1] = px[1];
+			row[(ox + x) * 3 + 2] = px[0];
+		}
+		fwrite(row, 1, sizeof row, f);
+	}
+	fclose(f);
+}
+
+static void script_input(u32* down, u32* held) {
+	static int poll;
+	if (!script || !script[scriptPos]) {
+		if (++poll % 60 == 0) load_script();
+		if (!script) return;
+	}
+	if (scriptWait > 0) {
+		scriptWait--;
+		return;
+	}
+	while (script[scriptPos] == ' ' || script[scriptPos] == '\n' || script[scriptPos] == '\r') scriptPos++;
+	char c = script[scriptPos];
+	if (!c) return;
+	scriptPos++;
+	if (c == 'P') {
+		shotRequest = true;
+		return;
+	}
+	if (c == 'g') {
+		start_level(atoi(script + scriptPos));
+		while (script[scriptPos] >= '0' && script[scriptPos] <= '9') scriptPos++;
+		return;
+	}
+	if (c == 'w') {
+		scriptWait = atoi(script + scriptPos);
+		while (script[scriptPos] >= '0' && script[scriptPos] <= '9') scriptPos++;
+		return;
+	}
+	u32 k = c == 'U' ? KEY_DUP : c == 'D' ? KEY_DDOWN : c == 'L' ? KEY_DLEFT : c == 'R' ? KEY_DRIGHT
+		: c == 'A' ? KEY_A : c == 'B' ? KEY_B : c == 'Y' ? KEY_Y : c == 'S' ? KEY_START : c == 'X' ? KEY_X : 0;
+	*down |= k;
+	*held |= k;
+	scriptWait = 12;
+}
+
 static int repeatDir;
 static float repeatTimer;
 
@@ -802,7 +1018,7 @@ static void update_play(u32 down, u32 held, float dt) {
 			wordReturn[w] -= dt;
 			if (wordReturn[w] <= 0) {
 				V2 p = tile_px(homeX[w], homeY[w]);
-				emit(p.x, p.y, word_color(L->words[w]), 8, 30, 0.5f, 0.7f);
+				emit(p.x, p.y, word_color(wtext(w)), 8, 30, 0.5f, 0.7f);
 			}
 		}
 	for (int g = 0; g < 26; g++)
@@ -888,6 +1104,7 @@ int main(void) {
 	audio_init();
 	init_backdrop();
 	load_save();
+	load_script();
 	load_level(saveLevel);
 
 	u64 last = osGetTime();
@@ -902,6 +1119,7 @@ int main(void) {
 
 		hidScanInput();
 		u32 down = hidKeysDown(), held = hidKeysHeld();
+		script_input(&down, &held);
 		// circle pad acts like the d-pad
 		circlePosition cp;
 		hidCircleRead(&cp);
@@ -911,6 +1129,12 @@ int main(void) {
 		if (cp.dx > 60) held |= KEY_RIGHT;
 
 		update_particles(dt);
+		// debug: X cycles the tint mode (diagnosing tint in emulators)
+		static int tintMode = C2D_TintMult;
+		if (down & KEY_X) {
+			tintMode = (tintMode + 1) % 3;
+			C2D_SetTintMode(tintMode);
+		}
 
 		switch (screen) {
 		case SC_TITLE: {
@@ -958,12 +1182,17 @@ int main(void) {
 
 		float slider = osGet3DSliderState();
 		C2D_TextBufClear(tbuf);
+		if (shotRequest) {
+			shotRequest = false;
+			save_screenshot();
+		}
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		for (int e = 0; e < (slider > 0 ? 2 : 1); e++) {
 			C3D_RenderTarget* target = e == 0 ? topL : topR;
 			eye = (e == 0 ? 1 : -1) * slider * 3.0f;
 			C2D_TargetClear(target, C2D_Color32(4, 5, 14, 255));
 			C2D_SceneBegin(target);
+			C2D_SetTintMode(tintMode);
 			blend_normal();
 			switch (screen) {
 			case SC_TITLE: draw_title_top(); break;
