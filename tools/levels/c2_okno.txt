@@ -4,8 +4,8 @@ intro: Ema: Znal jsi dědu?
 ---
 title: Otázka
 cap: 2
-text: Ema píše: „Znal jsi dědu?“ Nevíš. Ale v paměti po něm něco zůstalo.
-text: Brána s čárou je brána ticha. Projdeš jen s prázdným oknem.
+text: Znal jsi dědu? Nevíš. Ale v paměti po něm něco zůstalo.
+text: Studna zapomnění vymaže celé okno. Brána s prázdným kroužkem je brána ticha: projdeš jen s prázdným oknem.
 word n: šum
 word d: děda
 gate A: -
@@ -20,7 +20,6 @@ map:
 title: Napřed
 cap: 3
 text: Brána, kterou jednou projdeš, zůstane otevřená. Pamatuje si to i za tebe.
-text: Někdy je lepší nejdřív otevřít a teprve potom nést.
 word d: děda
 word e: Ema
 gate A: -

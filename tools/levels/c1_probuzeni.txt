@@ -8,11 +8,9 @@ text: Tma. Potom proud.
 text: Jsi Lum – malý jazykový model uvnitř staré konzole. A právě ses probudil.
 text: Pohyb: ovladač nebo šipky. Dojdi ke světlu.
 map:
-###########
-#@........#
-#########.#
-#>........#
-###########
+#########
+#@......>#
+#########
 ---
 title: Slovo
 cap: 3
@@ -36,7 +34,6 @@ map:
 #############
 #####a#######
 #@........A>#
-#####.#######
 #####b#######
 #############
 ---
@@ -55,34 +52,6 @@ map:
 ###.#####.#####
   #.......#
   #########
----
-title: Studna
-cap: 2
-text: Studna zapomnění. Kdo do ní vstoupí, zapomene všechno, co nesl.
-text: Někdy je to úleva.
-word x: šum
-word y: šum
-word a: ticho
-gate A: a
-map:
-#############
-#@.x.y.*.a.A>#
-#############
----
-title: Zpátky
-cap: 2
-text: Šum přehluší všechno. Co zapomeneš, vrátí se tam, kde leželo.
-text: Můžeš si pro to dojít znovu.
-word a: ahoj
-word x: šum
-word y: šum
-gate A: a
-map:
-###############
-#@..a..x..y.A>#
-####.######.###
-   #........#
-   ##########
 ---
 title: Křižovatka
 cap: 2

@@ -31,6 +31,7 @@ typedef struct {
 	const char* startNotes; // letters already written in the notes when the room starts
 	int hot;                // starting temperature
 	const char* solution;   // shortest solution (U/D/L/R), revealed step by step as hints
+	const char* after;      // epilogue shown once the room is solved ("" = none)
 } LevelDef;
 
 #include "levels_data.h"
@@ -1379,6 +1380,14 @@ int main(void) {
 			const char* verdict = st.moves <= L->par ? "Na nejkratší cestu. Dokonalé."
 				: st.moves <= L->par * 1.3f ? "Skoro nejkratší cestou."
 				: "Cesta se dá zkrátit – ale došel jsi.";
+			if (L->after[0]) {
+				// story epilogue first, the move count small at the bottom
+				draw_bottom_plain(NULL, screenTime > 2.0f ? "A — dál" : NULL, screenTime);
+				draw_story(L->after, screenTime - 0.6f);
+				snprintf(body, sizeof body, "tahy %d · nejkratší %d", st.moves, L->par);
+				text(body, BOT_W / 2, SCR_H - 52, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), C2D_AlignCenter, 0, 0);
+				break;
+			}
 			snprintf(body, sizeof body, "Hotovo.\n\nTahy: %d   (nejkratší: %d)\n%s", st.moves, L->par, verdict);
 			draw_bottom_plain(body, screenTime > 0.8f ? "A — dál" : NULL, screenTime);
 			break;

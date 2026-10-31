@@ -31,6 +31,7 @@ Chapter file format (one file per chapter, rooms separated by a line '---'):
   start notes: a b      (optional, letters already in the notes)
   hot: 1                (optional, starting temperature)
   text: story line shown when the room starts (may repeat)
+  after: epilogue shown once the room is solved (optional, may repeat; "Ema: ..." lines become chat bubbles)
   word a: světlo
   gate A: a b
   map:
@@ -60,6 +61,7 @@ class Room:
         self.start_notes = ""
         self.hot = 0
         self.text = []
+        self.after = []
         self.words = {}
         self.gates = {}
         self.rows = []
@@ -98,6 +100,8 @@ def parse_chapter(path):
                 r.hot = int(val)
             elif key == "text":
                 r.text.append(val)
+            elif key == "after":
+                r.after.append(val)
             elif key.startswith("word "):
                 r.words[key[5:].strip()] = val
             elif key.startswith("gate "):
@@ -307,6 +311,7 @@ def main():
         out.append(f"    .notes = {r.notes}, .startNotes = {c_str(r.start_notes)}, .hot = {r.hot},")
         out.append(f"    .solution = {c_str(r.solution)},")
         out.append(f"    .text = {c_str(chr(10).join(r.text))},")
+        out.append(f"    .after = {c_str(chr(10).join(r.after))},")
         out.append(f"    .words = {{ {words} }},")
         out.append(f"    .gates = {{ {gates} }},")
         out.append("    .map = {")
