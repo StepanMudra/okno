@@ -816,7 +816,7 @@ static void draw_bottom_play(void) {
 	// the window
 	float slotW = fminf(70, (BOT_W - 40.0f) / L->cap - 6), slotH = 30;
 	float total = L->cap * (slotW + 6) - 6, x0 = (BOT_W - total) / 2, y0 = 44;
-	text("‹ tohle zapomeneš první", x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
+	text("tohle zapomeneš první", x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
 	text("okno", x0 + total, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.8f), C2D_AlignRight, 0, 0);
 	for (int i = 0; i < L->cap; i++) {
 		float x = x0 + i * (slotW + 6);
@@ -839,8 +839,8 @@ static void draw_bottom_play(void) {
 	// the notes: words that survive wells and overflow
 	float ty = 92;
 	if (L->notes > 0) {
-		float nw = 64, ny = y0 + 40, nx0 = (BOT_W - (L->notes * (nw + 6) - 6)) / 2;
-		text("poznámky", nx0 - 8, ny + 4, 0.42f, rgba(0.6f, 1, 0.75f, 0.7f), C2D_AlignRight, 0, 0);
+		float nw = 64, ny = y0 + 50, nx0 = (BOT_W - (L->notes * (nw + 6) - 6)) / 2;
+		text("poznámky – přežijí studnu i noc", nx0, ny - 13, 0.42f, rgba(0.6f, 1, 0.75f, 0.7f), 0, 0, 0);
 		for (int i = 0; i < L->notes; i++) {
 			float x = nx0 + i * (nw + 6);
 			bool filled = i < st.nnotes;
@@ -850,7 +850,7 @@ static void draw_bottom_play(void) {
 			C2D_DrawImageAt(img[sprites_panel_idx], x, ny, 0.5f, &t, nw / 64.0f, 22 / 32.0f);
 			if (filled) text(wtext(st.notes[i]), x + nw / 2, ny + 4, 0.48f, rgba(0.04f, 0.05f, 0.1f, 1), C2D_AlignCenter, 0, 0);
 		}
-		ty = ny + 34;
+		ty = ny + 32;
 	}
 	bool usesHeat = L->hot;
 	for (int y = 0; y < GH && !usesHeat; y++)
@@ -937,7 +937,8 @@ static void draw_end_top(void) {
 // update
 
 // Test autopilot: if sdmc:/3ds/Okno/script.txt exists, its keys are played back.
-// Tokens: U D L R A B Y S (start) X; wN waits N frames; sN frames per key; gN jumps to room N; P screenshot. Used to film the game in an emulator.
+// Tokens: U D L R A B Y S (start) X; wN waits N frames; sN frames per key; gN jumps to room N; P screenshot;
+// W waits for a playable room, V for a solved one. Used to film the game in an emulator.
 static char* script;
 static int scriptPos, scriptWait, scriptStep = 12;
 
@@ -995,7 +996,14 @@ static void script_input(u32* down, u32* held) {
 	while (script[scriptPos] == ' ' || script[scriptPos] == '\n' || script[scriptPos] == '\r') scriptPos++;
 	char c = script[scriptPos];
 	if (!c) return;
+	// W: wait until a room is being played (confirming chapter cards); V: wait until the room is solved
+	if (c == 'W') {
+		if (screen == SC_CHAPTER && screenTime > 0.8f) *down |= KEY_A;
+		if (screen != SC_PLAY || roomTime < 0.3f) return;
+	}
+	if (c == 'V' && (screen != SC_SOLVED || screenTime < 1.0f)) return;
 	scriptPos++;
+	if (c == 'W' || c == 'V') return;
 	if (c == 's') {
 		scriptStep = atoi(script + scriptPos);
 		while (script[scriptPos] >= '0' && script[scriptPos] <= '9') scriptPos++;
