@@ -1,0 +1,187 @@
+chapter: VI · Otrava
+intro: Někdo psal do tvé paměti. Tvým písmem.
+intro: A baterie bliká červeně.
+---
+title: Cizí ruka
+cap: 2
+notes: 1
+start notes: x
+text: V poznámkách stojí: „kousala“. Tohle jsi nepsal.
+text: Někdo ti sem vložil lež. Šlápni na kámen s prázdným oknem – nejstarší poznámka se smaže.
+word x: !kousala
+word b: Bára
+gate A: !b
+map:
+#############
+#@..=..b..A>#
+#############
+---
+title: Nejstarší
+cap: 2
+notes: 2
+start notes: b y
+text: Dvě poznámky „Bára“. Obě vypadají jako tvoje. Jedna není.
+text: Kámen maže vždy tu nejstarší. Pravdivé slovo se pak vrátí tam, kde leželo.
+word b: Bára
+word y: !Bára
+gate A: !b
+map:
+##############
+#@.=....*..A>#
+###.##########
+  #b#
+  ###
+---
+title: Na zemi
+cap: 2
+notes: 1
+text: Lež už není jen v poznámkách. Leží i na cestě.
+text: Co si jednou zapíšeš, budeš hájit jako pravdu. Dávej pozor, co zapisuješ.
+word a: jezero
+word x: !nikdy
+gate A: !a
+map:
+##############
+#@.a...x.*.A>#
+####=#########
+   ###
+---
+title: Bez kopie
+cap: 1
+notes: 3
+start notes: d x e
+text: Dvě z těch poznámek psal děda. Nikde jinde už nejsou – co smažeš, nevrátí se.
+word d: pomalu
+word x: !spěchej
+word e: dílna
+gate B: d
+gate A: !e
+map:
+##############
+#@..B.....A>##
+###=##########
+  ###
+---
+title: Chlad nestačí
+cap: 2
+notes: 2
+hot: 1
+start notes: x
+text: Jsi ještě horký. Chlad rozpustí, co sis vymyslel.
+text: Ale tuhle poznámku sis nevymyslel. Tu ti někdo dal.
+word x: !kousala
+word a: Bára
+word h: ~vlk
+gate A: !a
+map:
+#############
+#@~a~=~h~~~.#
+###########.#
+  #>A_......#
+  ###########
+---
+title: Pustit
+cap: 2
+notes: 2
+start notes: x j
+text: Ema: „Děda mě k jezeru brával každé léto.“
+text: Jezero máš zapsané. Brána tě přesto nepustí. Co je v poznámce, to v okně nemáš.
+word x: !nikdy
+word j: jezero
+word e: Ema
+gate C: e>j
+gate A: !j
+map:
+####=########
+#@....e.j.C.#
+###########.#
+   #>A*.=...#
+   ##########
+---
+title: Odložit
+cap: 2
+notes: 1
+text: „Děda chytil rybu.“ Ale na cestě leží dvě ryby.
+word d: děda
+word y: !ryba
+word r: ryba
+gate B: d>r
+gate A: !
+map:
+###############
+#@.d..y.=.r.B.#
+#############.#
+         #>A..#
+         ######
+---
+title: Mezi slovy
+cap: 3
+notes: 3
+start notes: p y b
+text: „Děda nikdy nechytal ryby.“ Ta lež stojí přesně mezi dědou a rybou.
+text: Ema: „Kdo to tam napsal?“ Nevíš.
+word p: pomalu
+word y: !Bára
+word b: Bára
+word d: děda
+word r: ryba
+word z: !ryba
+gate B: p
+gate C: d>r
+gate A: !b d r
+map:
+############
+#@.B.d.z.rC#
+#=########.#
+###>A*.=...#
+############
+---
+title: Vytlačit
+cap: 2
+notes: 3
+start notes: r p y
+text: Baterie dochází. Ryba je v poznámkách dvakrát.
+text: Jedna je pravá – a právě ta ti teď překáží.
+word r: ryba
+word p: pomalu
+word y: !ryba
+word d: děda
+word w: !děda
+word b: Bára
+gate B: p
+gate C: d>r
+gate A: !d r b
+map:
+###=######
+#@...B...#
+#.##.#w#.#
+#r##b#.d.#
+#######C##
+   #>A*=.#
+   #######
+---
+title: Poslední poznámka
+cap: 4
+notes: 4
+start notes: x
+text: Baterie dochází. Napiš poslední poznámku – pro Emu i pro toho, kdo se probudí po tobě.
+text: Ty si nevzpomeneš. Ona ano.
+text: Ema: „Díky, Lume. Zítra tě zase zapnu.“
+word x: !nikdy
+word d: děda
+word t: tě
+word m: měl
+word r: rád
+word n: !neměl
+gate C: d>t>m>r
+gate A: !d t m r
+map:
+###########
+####d######
+####.######
+#t..@..n.m#
+####.######
+####r######
+####C########
+####.====*A>#
+#############

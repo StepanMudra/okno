@@ -1,0 +1,174 @@
+chapter: IV · Poznámky
+intro: Je pozdě. Ema zívá a drží palec na vypínači.
+intro: Co Lum neunese do rána, to zmizí.
+---
+title: Noc
+cap: 1
+notes: 1
+text: Ema za chvíli konzoli vypne a ty zapomeneš všechno.
+text: Kámen = zapíše tvoje nejnovější slovo do poznámek. Studna poznámky nesmaže.
+word a: zítra
+gate A: a
+map:
+##########
+#@.a.*.A>#
+###.######
+  #=#
+  ###
+---
+title: Místo
+cap: 1
+notes: 1
+start notes: z
+text: Ráno. V poznámkách svítí „zítra“. Nevíš, kdy jsi to psal.
+text: Ema chce slyšet o dědově dílně. Brána počítá i slova v poznámkách.
+word z: zítra
+word a: dílna
+word b: piliny
+gate A: a b
+map:
+#############
+#@.a...b..A>#
+####.########
+   #=#
+   ###
+---
+title: Ticho
+cap: 2
+notes: 1
+text: Tichá brána chce prázdné okno. Poznámky jí nevadí.
+text: Kámen ale zapíše jen to slovo, které jsi vzal naposled.
+word a: Bára
+word n: šum
+word b: pes
+gate A: -
+gate B: a b
+map:
+##############
+#@.a.n.=.A.b.#
+############B#
+           #>#
+           ###
+---
+title: Stráž
+cap: 1
+notes: 2
+text: Noc je dlouhá. Kámen v cestě nečeká: když nic neneseš, smaže ti nejstarší poznámku.
+word a: pomalu
+word b: hoblík
+gate A: a b
+map:
+###############
+#@.a=.*..=..A>#
+#######.#######
+      #b#
+      ###
+---
+title: Gumování
+cap: 2
+notes: 1
+start notes: a
+text: Ema se ptá, co říkal děda, když spěchala. V poznámce máš „děda“.
+text: Pořadí ale hlídá jen okno. Prázdné okno na kameni poznámku smaže.
+word a: děda
+word b: říkal
+gate A: a>b
+map:
+############
+#@.=..b..A>#
+####.#######
+   #a#
+   ###
+---
+title: Jedna stránka
+cap: 1
+notes: 1
+text: Ema píše: „Byl děda v dílně rád?“ Na poznámky ti zbyla jediná stránka.
+text: Otevřená brána zůstane otevřená.
+word a: dílna
+word b: piliny
+gate A: a
+gate B: b
+map:
+################
+#@..=..*.A*.B.>#
+###.#.##########
+  #a#b#
+  #####
+---
+title: Nejstarší
+cap: 1
+notes: 2
+text: Když jsou poznámky plné, kámen pustí tu nejstarší. Na tom, co zapíšeš první, záleží.
+word a: Bára
+word b: jezero
+word c: plavala
+gate A: a b
+gate B: a c
+map:
+##############
+#a.=.*.A.c=*B>#
+#.#.##########
+#@.b#
+#####
+---
+title: Zpátky domů
+cap: 2
+notes: 1
+text: Ema chce slyšet, jak Bára skákala do vody. Napsané slovo už nevezmeš zpátky.
+text: Smažeš ho – a ono čeká tam, kde leželo.
+word a: Bára
+word b: skočila
+word n: šum
+gate S: -
+gate B: a>b
+map:
+##############
+#@.a.=.S.....#
+####.######.##
+   #n#   #b.#
+   ###   ##B#
+          #>#
+          ###
+---
+title: Dílna
+cap: 2
+notes: 2
+text: Děda v dílně nejdřív hoblíkem, pak pilníkem. Tak to Ema říká.
+text: Prkno a hřebík si odlož. Ruce budeš potřebovat volné.
+word c: prkno
+word d: hřebík
+word a: hoblík
+word b: pilník
+word n: šum
+gate O: a>b
+gate U: c d
+map:
+##############
+#@.c.d.=*...a#
+##########n###
+#>UO.b.....###
+##############
+---
+title: Do rána
+cap: 2
+notes: 3
+text: Ema vypíná konzoli. Ráno uvidíš jen poznámky.
+text: Vejdou se tři slova. Vyber ta, která tě dovedou zpátky.
+word a: děda
+word b: pomalu
+word c: Ema
+word x: Bára
+word y: jezero
+word n: šum
+gate O: x>y
+gate T: -
+gate F: a b c
+map:
+#############
+#a=*@#.Tc####
+###.#y.######
+#x.n..=..*F>#
+##.##########
+#bO#
+####

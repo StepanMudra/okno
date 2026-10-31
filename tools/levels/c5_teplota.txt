@@ -1,0 +1,157 @@
+chapter: V · Teplota
+intro: Ema píše: Vyprávěj mi o dědovi. Nějaký příběh.
+intro: Příběh se nedá jen najít. Musí se vymyslet.
+---
+title: Teplo
+cap: 3
+text: K vymýšlení je potřeba teplo.
+text: Oranžová deska tě rozpálí. Horký projdeš i mlhou.
+word a: děda
+gate A: a
+map:
+###############
+#^..@...~~.a.A>#
+###############
+---
+title: Přelud
+cap: 3
+text: Horký vidíš víc. I slova, která nikdy nebyla – a vypadají jako pravá.
+text: Brána pravdy nepustí nic vymyšleného. Modrá deska tě zchladí a přeludy zmizí.
+word a: dílna
+word x: ~loď
+gate A: !a
+map:
+################
+#@^~~.x.a....A>#
+#########_######
+        ###
+---
+title: Dvojče
+cap: 2
+text: Děda měl psa. Jmenovala se Bára.
+text: Tak proč ji vidíš dvakrát?
+word b: pes
+word a: Bára
+word x: ~Bára
+gate A: !a b
+map:
+###############
+#@.b^~~a..x.A>#
+########_######
+       ###
+---
+title: Horečka
+cap: 2
+hot: 1
+text: Jezero. Ryby. Velryby ne.
+text: Probouzíš se rozpálený a oranžová deska tu není. Co vychladne, už se neohřeje.
+word a: jezero
+word b: ryba
+word x: ~velryba
+gate A: !a b
+map:
+##############
+#a~~.@.x._.b.#
+############A#
+           #>#
+           ###
+---
+title: Zapomenout
+cap: 2
+text: Ema píše: Děda umřel v zimě.
+text: Ta slova jsou těžká a brána chce ticho. Studna tu není. Jenom sny.
+word a: zima
+word b: smutek
+word x: ~sníh
+word y: ~led
+gate A: -
+map:
+##############
+#^.x.y...._A>#
+#######.######
+#@.a..b.#
+#########
+---
+title: Dvě Báry
+cap: 2
+text: Nejdřív děda, potom Bára. Tak spolu chodili.
+text: Jenže Bára se tě drží. Kdo ji odežene?
+word a: děda
+word b: Bára
+word y: ~Bára
+gate A: !a>b
+map:
+#############
+#>A@b.^~~.a.#
+#########y###
+        ###
+---
+title: Zápis
+cap: 2
+notes: 2
+text: V dílně nebylo zlato. Jen piliny.
+text: Zápis vezme nejnovější slovo – i sen. A zapsaný sen vydrží, dokud nevychladneš.
+word a: dílna
+word b: piliny
+word x: ~zlato
+gate A: !a b
+map:
+###############
+#@^~a.x=*.b_A>#
+###############
+---
+title: Bez chladu
+cap: 2
+notes: 1
+text: Děda nikdy nespěchal.
+text: Za branou pravdy je mlha a modrá deska tu není. Zůstaň horký – a přesto čistý.
+word a: pomalu
+word b: jezero
+word x: ~rychle
+word z: ~hned
+word y: ~moře
+gate A: a b
+gate B: !
+map:
+##############
+#@^x.a.z.B~y~#
+#####=##*###b#
+###########>A#
+##############
+---
+title: Místo
+cap: 3
+text: Ema píše: A jak mluvil?
+text: Odpověď má tři slova a okno tři místa. Kdo je obsadí první?
+word a: děda
+word b: mluvil
+word c: pomalu
+word y: ~pomalu
+gate A: !a>b>c
+map:
+#############
+##a#b########
+#@....^y~cA>#
+#############
+---
+title: Příběh
+cap: 3
+notes: 1
+text: Ema čeká na příběh. Celý a pravdivý.
+text: Zápis unese jen jedno slovo. Rozmysli, co v něm bude – a kdy.
+word w: zima
+word a: děda
+word b: mluvil
+word c: pomalu
+word y: ~pomalu
+word z: ~rychle
+gate S: -
+gate A: !a>b>c
+map:
+################
+#....#a#b####=##
+#@w.=S...^z.y~##
+#.....#######c_#
+#############A##
+            #>#
+            ###

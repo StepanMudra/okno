@@ -937,9 +937,9 @@ static void draw_end_top(void) {
 // update
 
 // Test autopilot: if sdmc:/3ds/Okno/script.txt exists, its keys are played back.
-// Tokens: U D L R A B Y S (start) X; wN waits N frames. Used to film the game in an emulator.
+// Tokens: U D L R A B Y S (start) X; wN waits N frames; sN frames per key; gN jumps to room N; P screenshot. Used to film the game in an emulator.
 static char* script;
-static int scriptPos, scriptWait;
+static int scriptPos, scriptWait, scriptStep = 12;
 
 static void load_script(void) {
 	FILE* f = fopen(SAVE_DIR "/script.txt", "r");
@@ -996,6 +996,11 @@ static void script_input(u32* down, u32* held) {
 	char c = script[scriptPos];
 	if (!c) return;
 	scriptPos++;
+	if (c == 's') {
+		scriptStep = atoi(script + scriptPos);
+		while (script[scriptPos] >= '0' && script[scriptPos] <= '9') scriptPos++;
+		return;
+	}
 	if (c == 'P') {
 		shotRequest = true;
 		return;
@@ -1014,7 +1019,7 @@ static void script_input(u32* down, u32* held) {
 		: c == 'A' ? KEY_A : c == 'B' ? KEY_B : c == 'Y' ? KEY_Y : c == 'S' ? KEY_START : c == 'X' ? KEY_X : 0;
 	*down |= k;
 	*held |= k;
-	scriptWait = 12;
+	scriptWait = scriptStep;
 }
 
 static int repeatDir;

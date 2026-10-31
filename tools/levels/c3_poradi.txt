@@ -1,0 +1,156 @@
+chapter: III · Pořadí
+intro: Ema píše: „Pamatuješ si jezero? Děda mě tam bral na ryby."
+intro: Slova už umíš nosit. Teď musí stát ve správném pořadí.
+---
+title: Kdo koho
+cap: 2
+text: Brána se šipkami chce slova popořadě – zleva doprava, jak je sbíráš.
+text: „Děda chytil rybu" není „ryba chytila dědu".
+text: Když se spleteš, studna tě vyprázdní.
+word d: děda
+word r: ryba
+gate A: d>r
+map:
+############
+###r###d####
+#@.......A>#
+#####*######
+############
+---
+title: Cestou zpět
+cap: 3
+text: Děda říkal: nahodit, čekat, táhnout. Přesně v tomhle pořadí.
+text: Tady to leží pozpátku.
+word t: táhnout
+word c: čekat
+word n: nahodit
+gate A: n>c>t
+map:
+############
+#>A@.t.c.n.#
+#########*##
+############
+---
+title: Znovu
+cap: 2
+text: Ryba ti leží přímo v cestě. Neobejdeš ji.
+text: Co zapomeneš, můžeš sebrat znovu. Tentokrát ve správnou chvíli.
+word r: ryba
+word d: děda
+gate A: d>r
+map:
+##########
+#@r.*..###
+###.##d###
+###....A>#
+##########
+---
+title: Šum
+cap: 2
+text: Žádná studna. Jen šum u cesty.
+text: I šum umí vytlačit staré slovo z okna.
+word r: ryba
+word d: děda
+word n: šum
+gate A: d>r
+map:
+############
+#@r......A>#
+####n#d#####
+############
+---
+title: Klíč
+cap: 2
+text: Bez dědy k vodě nesmíš.
+text: Ale co jednou otevřeš, zůstane otevřené.
+word d: děda
+word r: ryba
+gate C: d
+gate B: r>d
+map:
+############
+#d.@...C.r.#
+####*#B#####
+######>#####
+############
+---
+title: Naopak
+cap: 2
+text: První brána chce slyšet, že děda chytil rybu.
+text: Druhá chce slyšet, co si o tom myslí ryba.
+word d: děda
+word r: ryba
+gate A: d>r
+gate B: r>d
+map:
+##############
+#@.d.r.A...B>#
+########*#####
+##############
+---
+title: Potichu
+cap: 2
+text: „U vody se nemluví, ryby slyší." Tak to děda říkal.
+text: Tichá brána pustí jen prázdné okno.
+word d: děda
+word r: ryba
+word n: šum
+gate S: -
+gate A: d>r
+map:
+##############
+#@.d..r.S...A>#
+####n##*#######
+##############
+---
+title: Před branou
+cap: 3
+text: Před branou leží jezero a šum. Kdo jde kolem, sebere je – a něco jiného zapomene.
+text: Vyber si včas, co to bude.
+word d: děda
+word r: ryba
+word j: jezero
+word n: šum
+gate A: d>r
+map:
+#############
+###d#r#######
+#@......jnA>#
+#############
+---
+title: Ema a děda
+cap: 3
+text: Ema a děda, spolu na kraji vody. Bez nich tě brána nepustí.
+text: Ta druhá chce víc: děda chytal ryby.
+word d: děda
+word c: chytal
+word r: ryby
+word e: Ema
+word s: šum
+gate U: e d
+gate O: d>c>r
+map:
+#############
+###s#d###c###
+#@.....U.r.O>#
+###e#*########
+#############
+---
+title: Pravda
+cap: 4
+text: Ema píše: „A co mě tam děda učil?"
+text: Odpověď je tady, rozházená po břehu. Poskládej první pravdivou větu o dědovi.
+word d: děda
+word t: tě
+word u: učil
+word c: čekat
+word n: šum
+word m: šum
+gate S: -
+gate O: d>t>u>c
+map:
+#############
+##m#u########
+#@.d..S.c.tO>#
+##n#*########
+#############

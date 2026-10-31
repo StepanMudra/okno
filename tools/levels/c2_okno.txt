@@ -1,0 +1,180 @@
+chapter: II · Okno
+intro: Ema napsala další otázku.
+intro: „Znal jsi dědu?“
+---
+title: Otázka
+cap: 2
+text: Ema píše: „Znal jsi dědu?“ Nevíš. Ale v paměti po něm něco zůstalo.
+text: Brána s čárou je brána ticha. Projdeš jen s prázdným oknem.
+word n: šum
+word d: děda
+gate A: -
+gate B: d
+map:
+#############
+#@.n..A.d.B>#
+####.########
+   #*#
+   ###
+---
+title: Napřed
+cap: 3
+text: Brána, kterou jednou projdeš, zůstane otevřená. Pamatuje si to i za tebe.
+text: Někdy je lepší nejdřív otevřít a teprve potom nést.
+word d: děda
+word e: Ema
+gate A: -
+gate B: d e
+map:
+##############
+#@...A..e..B>#
+##.###########
+ #d#
+ ###
+---
+title: Bára
+cap: 2
+text: Bára, dědova fena. Prý za ním chodila krok za krokem.
+text: Slovo, které už neseš, podruhé nezvedneš.
+word d: děda
+word e: Ema
+word b: Bára
+gate A: d e
+map:
+###########
+#d####e####
+#.####.####
+#@..b...A>#
+###########
+---
+title: Studna
+cap: 2
+text: Dílna. Piliny, ponk, děda v zástěře. Jenže cesta k nim vede přes studnu.
+text: Zapomenout je tu snadné. Najdi, k čemu je dobré ticho.
+word a: děda
+word b: dílna
+word c: piliny
+gate S: -
+gate B: a c
+map:
+################
+#@a.b...*..c.B>#
+#######.##.#####
+      #.S..#
+      ######
+---
+title: Dvě strany
+cap: 2
+text: Ema: „Jaký byl?“ V paměti se pořád opakuje jedno jeho slovo.
+text: Z téhle strany k tichu nedojdeš.
+word d: děda
+word e: Ema
+word x: šum
+word p: pomalu
+gate H: d p
+gate S: -
+map:
+#############
+#@..d..e....#
+#.#########.#
+#x#########*#
+#S###p#####.#
+#...........#
+######H######
+     #>#
+     ###
+---
+title: Brány
+cap: 2
+text: Chceš Emě říct všechno najednou. Tolik ale neuneseš.
+text: Nemusíš nést všechno naráz.
+word a: děda
+word b: dílna
+word c: Ema
+word d: jezero
+gate A: a b
+gate B: c d
+map:
+############
+#a#b#c#d####
+#.#.#.#.####
+#@.......AB>#
+#############
+---
+title: Jezero
+cap: 3
+text: Jezero. Děda tu s Emou chytal ryby a říkal jí: „Pomalu.“
+text: Šum leží přímo v cestě. Vezmi si ho dřív, než on vezme tebe.
+word j: jezero
+word r: ryba
+word p: pomalu
+word n: šum
+word m: šum
+gate G: j r p
+map:
+##############
+##j###r###p###
+##.###.###.###
+#@..n...m....G>#
+################
+---
+title: Výměna
+cap: 3
+text: Co uneseš do dílny, neuneseš k jezeru. Musíš vybírat.
+text: Jen děda půjde s tebou celou cestu.
+word a: dílna
+word b: piliny
+word c: děda
+word d: jezero
+word e: ryba
+word n: šum
+gate A: a b c
+gate B: c d e
+map:
+################
+#a#b#c####d#e###
+#.#.#.####.#.###
+#@.....An.....B>
+################
+---
+title: Uložená hra
+cap: 4
+text: Uložená hra. Dva rybáři: DĚDA a EMA. Hráli ji spolu každý večer.
+text: Konečně uneseš čtyři slova. Jenže šum taky.
+word d: děda
+word b: Ema
+word j: prut
+word r: ryba
+word n: šum
+word m: šum
+gate A: d b j r
+map:
+################
+#d###b#j###r####
+#.###.#.###.####
+#@.n.....m...A>#
+################
+---
+title: Odpověď
+cap: 3
+text: Ema čeká. Kurzor bliká: „Znal jsi dědu?“
+text: Neznal. Ale už víš, kde hledat.
+word v: nevím
+word a: ale
+word n: najdu
+word h: ho
+word b: Bára
+word m: šum
+gate N: v
+gate S: -
+gate H: a n h
+map:
+##############
+#v#a####n#h###
+#.#.####.#.###
+#@...b...m..N#
+###########*.#
+############S#
+############H#
+############>#
+##############
