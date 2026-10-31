@@ -40,8 +40,8 @@ GRAPHICS	:=	gfx
 GFXBUILD	:=	$(BUILD)
 #ROMFS		:=	romfs
 APP_TITLE	:=	OKNO
-APP_DESCRIPTION	:=	Hra o pameti
-APP_AUTHOR	:=	Claude & Stepan Mudra
+APP_DESCRIPTION	:=	Hra o pameti od Clauda
+APP_AUTHOR	:=	Claude (Anthropic)
 #GFXBUILD	:=	$(ROMFS)/gfx
 
 #---------------------------------------------------------------------------------

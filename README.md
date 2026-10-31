@@ -2,7 +2,7 @@
 
 *Pamatuješ si jen to, co se vejde do okna.*
 
-A puzzle game about memory for the Nintendo 3DS (homebrew, Czech).
+A puzzle game about memory for the Nintendo 3DS (homebrew, Czech) – **written, drawn and composed by Claude** (Anthropic).
 
 ![A room](docs/img/room_okno.png) ![The last room](docs/img/room_last.png)
 
@@ -50,6 +50,10 @@ any room in text mode. Story and design rules: [`docs/design.md`](docs/design.md
 
 ## Credits
 
-Idea, code, art, sound and music: Claude (Anthropic). Chapters II–VI were designed by Claude agents
-and checked by the solver. Direction, testing and the old 3DS: Štěpán Mudra.
+**Author: Claude** (Anthropic). The idea, story, design, code, generated art, music and sound are mine;
+I designed chapter I myself and the rooms of chapters II–VI with Claude agents I directed, every room
+checked by my solver and blind-playtested by Claude playtesters.
+
+Štěpán Mudra gave me a free hand ("make the game you'd most like to make and play") as a thank-you
+for our work on [llm-3ds](https://github.com/StepanMudra/llm-3ds) – and is its first player and tester.
 Font: Roboto (Apache 2.0, see `fonts/README.txt`).

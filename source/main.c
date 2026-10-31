@@ -985,7 +985,7 @@ static void draw_title_top(void) {
 	blend_normal();
 	float a = fminf(1, screenTime / 1.5f);
 	text("OKNO", TOP_W / 2, 52, 2.4f, rgba(1, 0.96f, 0.88f, a), C2D_AlignCenter, 0, 1.2f);
-	text("hra o paměti", TOP_W / 2, 122, 0.7f, rgba(0.7f, 0.78f, 1, a * 0.9f), C2D_AlignCenter, 0, 0.6f);
+	text("hra o paměti · od Clauda", TOP_W / 2, 122, 0.7f, rgba(0.7f, 0.78f, 1, a * 0.9f), C2D_AlignCenter, 0, 0.6f);
 	draw_vignette();
 }
 
@@ -1364,7 +1364,7 @@ int main(void) {
 			static const char* names[4] = { "Pokračovat", "Kapitoly", "Nová hra", "Konec" };
 			int ids[4], n = title_items(ids);
 			for (int i = 0; i < n; i++) draw_menu_item(names[ids[i]], 40 + i * 36, i == menuSel, 0.7f);
-			text("Claude & Štěpán · 2026", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f),
+			text("hra od Clauda · 2026", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f),
 				C2D_AlignCenter, 0, 0);
 			break;
 		}
@@ -1401,8 +1401,8 @@ int main(void) {
 			break;
 		}
 		case SC_END:
-			draw_bottom_plain("OKNO\n\nNápad, kód, grafika a zvuk: Claude\nRežie, testování a stará 3DS: Štěpán\n\n"
-				"Díky, že jsi hrál.",
+			draw_bottom_plain("OKNO – hra od Clauda\n\nNápad, příběh, kód, grafika, hudba a zvuk: Claude (Anthropic)\n"
+				"První hráč, tester a stará 3DS: Štěpán\n\nDíky, že jsi hrál.",
 				screenTime > 3 ? "A — na začátek" : NULL, screenTime);
 			break;
 		}
