@@ -6,3 +6,5 @@ build/
 .DS_Store
 __pycache__/
 fonts/Roboto-Light.ttf
+okno
+okno-save/

@@ -1,8 +1,12 @@
 // OKNO – a puzzle game about memory, for the Nintendo 3DS.
 // You are Lum, a tiny language model. Words you pick up follow you as your
 // context window; when it overflows, the oldest word is forgotten.
+#ifdef PC
+#include "../pc/compat.h"
+#else
 #include <3ds.h>
 #include <citro2d.h>
+#endif
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,8 +15,10 @@
 
 #include "audio.h"
 #include "sprites.h"
+#ifndef PC
 #include "sprites_t3x.h"
 #include "font_bcfnt.h"
+#endif
 
 typedef struct {
 	const char* title;
@@ -45,11 +51,27 @@ typedef struct {
 #define OX ((TOP_W - GW * TS) / 2)
 #define OY ((SCR_H - GH * TS) / 2)
 #define MAXCAP 8
+// button names shown on screen
+#ifdef PC
+#define BTN_A "Enter"
+#define BTN_B "Z"
+#define BTN_Y "R"
+#define BTN_SELECT "H"
+#else
+#define BTN_A "A"
+#define BTN_B "B"
+#define BTN_Y "Y"
+#define BTN_SELECT "SELECT"
+#endif
 #define MAXNOTES 4
 #define UNDO_MAX 1024
 #define MAX_PARTICLES 320
 #define TRAIL_HIST 16
+#ifdef PC
+#define SAVE_DIR "okno-save"
+#else
 #define SAVE_DIR "sdmc:/3ds/Okno"
+#endif
 #define SAVE_PATH SAVE_DIR "/save.txt"
 
 // ---------------------------------------------------------------------------
@@ -517,7 +539,9 @@ static void load_save(void) {
 static void write_save(int lvl) {
 	saveLevel = lvl;
 	if (lvl > maxLevel) maxLevel = lvl;
+#ifndef PC
 	mkdir("sdmc:/3ds", 0777);
+#endif
 	mkdir(SAVE_DIR, 0777);
 	FILE* f = fopen(SAVE_PATH, "w");
 	if (f) {
@@ -902,7 +926,7 @@ static void draw_bottom_play(void) {
 	char foot[96];
 	snprintf(foot, sizeof foot, "tahy %d", st.moves);
 	text(foot, 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f), 0, 0, 0);
-	text("B zpět  Y znovu  SELECT rada", BOT_W - 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f),
+	text(BTN_B " zpět  " BTN_Y " znovu  " BTN_SELECT " rada", BOT_W - 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f),
 		C2D_AlignRight, 0, 0);
 }
 
@@ -1052,6 +1076,9 @@ static void save_screenshot(void) {
 	mkdir(SAVE_DIR "/shots", 0777);
 	char path[64];
 	snprintf(path, sizeof path, SAVE_DIR "/shots/%03d.ppm", shotCount++);
+#ifdef PC
+	pc_save_screenshot(path);
+#else
 	FILE* f = fopen(path, "wb");
 	if (!f) return;
 	fprintf(f, "P6\n400 480\n255\n");
@@ -1071,6 +1098,7 @@ static void save_screenshot(void) {
 		fwrite(row, 1, sizeof row, f);
 	}
 	fclose(f);
+#endif
 }
 
 static void script_input(u32* down, u32* held) {
@@ -1181,8 +1209,8 @@ static void update_play(u32 down, u32 held, float dt) {
 			hintSteps += (par + 3) / 4;
 			if (hintSteps > par) hintSteps = par;
 		}
-		set_message(hintSteps >= par ? "Nápověda: celá nejkratší cesta. Začni od začátku (Y) a jdi po stopách."
-			: "Nápověda: začátek nejkratší cesty. Další kus ukáže SELECT znovu. Začni od začátku (Y).");
+		set_message(hintSteps >= par ? "Nápověda: celá nejkratší cesta. Začni od začátku (" BTN_Y ") a jdi po stopách."
+			: "Nápověda: začátek nejkratší cesty. Další kus ukáže " BTN_SELECT " znovu. Začni od začátku (" BTN_Y ").");
 		audio_play(SND_MENU);
 		return;
 	}
@@ -1340,6 +1368,10 @@ int main(void) {
 		for (int e = 0; e < (slider > 0 ? 2 : 1); e++) {
 			C3D_RenderTarget* target = e == 0 ? topL : topR;
 			eye = (e == 0 ? 1 : -1) * slider * 3.0f;
+#ifdef PC
+			// no stereo on a monitor: a slow sway makes depth (and fake words) visible instead
+			eye = 1.4f * sinf(timeSec * 0.8f);
+#endif
 			C2D_TargetClear(target, C2D_Color32(4, 5, 14, 255));
 			C2D_SceneBegin(target);
 			C2D_SetTintMode(C2D_TintMult);
@@ -1375,11 +1407,11 @@ int main(void) {
 				bool open = i < n;
 				draw_menu_item(open ? CHAPTERS[i].title : "· · ·", 14 + i * 32, i == menuSel, 0.6f);
 			}
-			text("A hrát   B zpět", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f), C2D_AlignCenter, 0, 0);
+			text(BTN_A " hrát   " BTN_B " zpět", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f), C2D_AlignCenter, 0, 0);
 			break;
 		}
 		case SC_CHAPTER:
-			draw_bottom_plain(NULL, screenTime > 1.5f ? "A — pokračovat" : NULL, screenTime);
+			draw_bottom_plain(NULL, screenTime > 1.5f ? BTN_A " — pokračovat" : NULL, screenTime);
 			draw_story(CHAPTERS[chapter_of(levelIdx)].intro, screenTime);
 			break;
 		case SC_PLAY: draw_bottom_play(); break;
@@ -1390,20 +1422,20 @@ int main(void) {
 				: "Cesta se dá zkrátit – ale došel jsi.";
 			if (L->after[0]) {
 				// story epilogue first, the move count small at the bottom
-				draw_bottom_plain(NULL, screenTime > 2.0f ? "A — dál" : NULL, screenTime);
+				draw_bottom_plain(NULL, screenTime > 2.0f ? BTN_A " — dál" : NULL, screenTime);
 				draw_story(L->after, screenTime - 0.6f);
 				snprintf(body, sizeof body, "tahy %d · nejkratší %d", st.moves, L->par);
 				text(body, BOT_W / 2, SCR_H - 52, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), C2D_AlignCenter, 0, 0);
 				break;
 			}
 			snprintf(body, sizeof body, "Hotovo.\n\nTahy: %d   (nejkratší: %d)\n%s", st.moves, L->par, verdict);
-			draw_bottom_plain(body, screenTime > 0.8f ? "A — dál" : NULL, screenTime);
+			draw_bottom_plain(body, screenTime > 0.8f ? BTN_A " — dál" : NULL, screenTime);
 			break;
 		}
 		case SC_END:
 			draw_bottom_plain("OKNO – hra od Clauda\n\nNápad, příběh, kód, grafika, hudba a zvuk: Claude (Anthropic)\n"
 				"První hráč, tester a stará 3DS: Štěpán\n\nDíky, že jsi hrál.",
-				screenTime > 3 ? "A — na začátek" : NULL, screenTime);
+				screenTime > 3 ? BTN_A " — na začátek" : NULL, screenTime);
 			break;
 		}
 		if (fadeIn < 1) C2D_DrawRectSolid(0, 0, 0.9f, BOT_W, SCR_H, rgba(0.01f, 0.01f, 0.04f, 1 - fadeIn));

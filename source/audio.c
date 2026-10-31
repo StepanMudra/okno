@@ -1,6 +1,15 @@
 // Every sound in OKNO is synthesised at start-up: no samples, no files.
-// Needs the DSP firmware (sdmc:/3ds/dspfirm.cdc); without it the game is silent.
+// On the 3DS it needs the DSP firmware (sdmc:/3ds/dspfirm.cdc); without it the game is silent.
+// The PC build (-DPC) plays the same sounds through SDL2.
+#ifdef PC
+#include <SDL.h>
+#include <stdlib.h>
+#include "../pc/compat.h"
+#define linearAlloc malloc
+#define linearFree free
+#else
 #include <3ds.h>
+#endif
 #include <math.h>
 #include <string.h>
 #include "audio.h"
@@ -17,10 +26,17 @@ typedef struct {
 static bool ok;
 static Sound sounds[SND_COUNT];
 static Sound music;
-static ndspWaveBuf musicBuf;
 static int musicTheme = -1;
-static ndspWaveBuf sfxBuf[SFX_CHANNELS];
 static int nextChannel;
+#ifdef PC
+// channel 0 = music (looping), 1.. = sound effects
+typedef struct { const s16* data; u32 n, pos; bool loop; float vol; } Voice;
+static Voice voices[1 + SFX_CHANNELS];
+static SDL_AudioDeviceID device;
+#else
+static ndspWaveBuf musicBuf;
+static ndspWaveBuf sfxBuf[SFX_CHANNELS];
+#endif
 
 static float clampf(float v) { return v > 1 ? 1 : v < -1 ? -1 : v; }
 
@@ -110,6 +126,41 @@ static void make_sounds(void) {
 	sounds[SND_MENU] = m;
 }
 
+#ifdef PC
+static void mix_callback(void* user, Uint8* stream, int len) {
+	(void)user;
+	s16* out = (s16*)stream;
+	for (int i = 0; i < len / 2; i++) {
+		float m = 0;
+		for (int v = 0; v <= SFX_CHANNELS; v++) {
+			Voice* c = &voices[v];
+			if (!c->data) continue;
+			m += c->data[c->pos] / 32768.0f * c->vol;
+			if (++c->pos >= c->n) {
+				c->pos = 0;
+				if (!c->loop) c->data = NULL;
+			}
+		}
+		out[i] = (s16)(clampf(m) * 32767);
+	}
+}
+
+static void start_voice(int ch, const Sound* snd, bool loop, float vol) {
+	SDL_LockAudioDevice(device);
+	voices[ch] = (Voice){ snd->data, snd->n, 0, loop, vol };
+	SDL_UnlockAudioDevice(device);
+}
+
+void audio_init(void) {
+	SDL_AudioSpec want = { .freq = RATE, .format = AUDIO_S16SYS, .channels = 1, .samples = 1024,
+		.callback = mix_callback };
+	device = SDL_OpenAudioDevice(NULL, 0, &want, NULL, 0);
+	ok = device != 0;
+	if (!ok) return;
+	make_sounds();
+	SDL_PauseAudioDevice(device, 0);
+}
+#else
 static void setup_channel(int ch, float volume) {
 	ndspChnReset(ch);
 	ndspChnSetInterp(ch, NDSP_INTERP_LINEAR);
@@ -130,6 +181,7 @@ void audio_init(void) {
 
 	for (int c = 0; c < SFX_CHANNELS; c++) setup_channel(1 + c, 1.0f);
 }
+#endif
 
 // ---------------------------------------------------------------------------
 // music: one 16-second loop per theme, four chords of a slow pad plus sparse bells.
@@ -223,6 +275,14 @@ static void render_theme(const Theme* th, s16* out, u32 n) {
 void audio_music(int theme) {
 	if (!ok || theme == musicTheme || theme < 0 || theme >= MUSIC_COUNT) return;
 	musicTheme = theme;
+#ifdef PC
+	SDL_LockAudioDevice(device);
+	voices[0].data = NULL;
+	SDL_UnlockAudioDevice(device);
+	if (!music.data) music = alloc_sound(MUSIC_SECONDS);
+	render_theme(&THEMES[theme], music.data, music.n);
+	start_voice(0, &music, true, 0.9f);
+#else
 	ndspChnWaveBufClear(0);
 	while (ndspChnIsPlaying(0)) svcSleepThread(1000000);
 	if (!music.data) music = alloc_sound(MUSIC_SECONDS);
@@ -233,23 +293,32 @@ void audio_music(int theme) {
 	musicBuf.nsamples = music.n;
 	musicBuf.looping = true;
 	ndspChnWaveBufAdd(0, &musicBuf);
+#endif
 }
 
 void audio_play(int id) {
 	if (!ok || id < 0 || id >= SND_COUNT) return;
 	int ch = 1 + nextChannel;
 	nextChannel = (nextChannel + 1) % SFX_CHANNELS;
+#ifdef PC
+	start_voice(ch, &sounds[id], false, 1.0f);
+#else
 	ndspChnWaveBufClear(ch);
 	ndspWaveBuf* wb = &sfxBuf[ch - 1];
 	memset(wb, 0, sizeof *wb);
 	wb->data_vaddr = sounds[id].data;
 	wb->nsamples = sounds[id].n;
 	ndspChnWaveBufAdd(ch, wb);
+#endif
 }
 
 void audio_exit(void) {
 	if (!ok) return;
+#ifdef PC
+	SDL_CloseAudioDevice(device);
+#else
 	ndspExit();
+#endif
 	for (int i = 0; i < SND_COUNT; i++) linearFree(sounds[i].data);
 	if (music.data) linearFree(music.data);
 }
