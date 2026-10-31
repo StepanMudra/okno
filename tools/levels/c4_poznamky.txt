@@ -22,17 +22,18 @@ cap: 1
 notes: 1
 start notes: z
 text: Ráno. V poznámkách svítí „zítra“. Nevíš, kdy jsi to psal.
-text: Ema chce slyšet o dědově dílně. Brána počítá i slova v poznámkách.
+text: Brána počítá i poznámky. Když je stránka plná, staré slovo ustoupí. „Zítra“ nemá kam jít.
 word z: zítra
 word a: dílna
 word b: piliny
-gate A: a b
+gate A: z a
+gate B: a b
 map:
-#############
-#@.a...b..A>#
-####.########
-   #=#
-   ###
+##############
+#@.a..A..b.B>#
+####.##.######
+   #=##=#
+   ######
 ---
 title: Ticho
 cap: 2
@@ -52,18 +53,19 @@ map:
            ###
 ---
 title: Stráž
-cap: 1
+cap: 2
 notes: 2
-text: Noc je dlouhá. Kámen v cestě nečeká: když nic neneseš, smaže ti nejstarší poznámku.
+text: Noc je dlouhá. Za studnou dojdeš ke kameni vždycky s prázdnýma rukama.
+text: A prázdné ruce kámen potrestá: smaže nejstarší poznámku.
+word n: šum
 word a: pomalu
-word b: hoblík
-gate A: a b
+gate A: a
 map:
-###############
-#@.a=.*..=..A>#
-#######.#######
-      #b#
-      ###
+##############
+#@.n.=.*.=.A>#
+####.#########
+   #a#
+   ###
 ---
 title: Gumování
 cap: 2
@@ -91,11 +93,11 @@ word b: piliny
 gate A: a
 gate B: b
 map:
-################
-#@..=..*.A*.B.>#
-###.#.##########
-  #a#b#
-  #####
+###########
+#@.=.*A*B>#
+##.#.######
+ #a#b#
+ #####
 ---
 title: Nejstarší
 cap: 1
@@ -154,8 +156,8 @@ map:
 title: Do rána
 cap: 2
 notes: 3
-text: Ema vypíná konzoli. Ráno uvidíš jen poznámky.
-text: Vejdou se tři slova. Vyber ta, která tě dovedou zpátky.
+text: Ema vypíná konzoli. Ráno uvidíš jen poznámky – vejdou se tři slova.
+text: Na pořadí záleží: kámen u dědy vždycky jednu smaže.
 word a: děda
 word b: pomalu
 word c: Ema
@@ -165,6 +167,10 @@ word n: šum
 gate O: x>y
 gate T: -
 gate F: a b c
+after: Ráno. Konzole cvakne a obrazovka se rozsvítí.
+after: V poznámkách stojí: Ema. děda. pomalu.
+after: Ema: Ahoj Lume. Pamatuješ si mě?
+after: Nepamatuješ. Ale víš, kde začít.
 map:
 #############
 #a=*@#.Tc####
