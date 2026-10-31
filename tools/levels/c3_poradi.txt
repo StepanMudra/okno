@@ -31,24 +31,11 @@ map:
 #########*##
 ############
 ---
-title: Znovu
-cap: 2
-text: Ryba ti leží přímo v cestě. Neobejdeš ji.
-text: Co zapomeneš, můžeš sebrat znovu. Tentokrát ve správnou chvíli.
-word r: ryba
-word d: děda
-gate A: d>r
-map:
-##########
-#@r.*..###
-###.##d###
-###....A>#
-##########
----
 title: Šum
 cap: 2
-text: Žádná studna. Jen šum u cesty.
+text: Ryba ti leží v cestě a studna tu není. Jen šum.
 text: I šum umí vytlačit staré slovo z okna.
+text: Co vytlačíš, vrátí se na své místo – a příště ho zase sebereš.
 word r: ryba
 word d: děda
 word n: šum
@@ -74,20 +61,6 @@ map:
 ######>#####
 ############
 ---
-title: Naopak
-cap: 2
-text: První brána chce slyšet, že děda chytil rybu.
-text: Druhá chce slyšet, co si o tom myslí ryba.
-word d: děda
-word r: ryba
-gate A: d>r
-gate B: r>d
-map:
-##############
-#@.d.r.A...B>#
-########*#####
-##############
----
 title: Potichu
 cap: 2
 text: „U vody se nemluví, ryby slyší." Tak to děda říkal.
@@ -103,6 +76,22 @@ map:
 ####n##*#######
 ##############
 ---
+title: Bára
+cap: 3
+text: Bára štěkala na ryby. Pokaždé. Děda se jí smál.
+text: Tady ale všechno leží obráceně – a okno má jen tři místa.
+word b: Bára
+word s: štěkala
+word r: na ryby
+word n: šum
+gate A: b>s>r
+map:
+#############
+###s#.#######
+#@....r.b.A>#
+###n#########
+#############
+---
 title: Před branou
 cap: 3
 text: Před branou leží jezero a šum. Kdo jde kolem, sebere je – a něco jiného zapomene.
@@ -116,6 +105,24 @@ map:
 #############
 ###d#r#######
 #@......jnA>#
+#############
+---
+title: Pomalu
+cap: 3
+text: Děda říkal jedno slovo pořád dokola. Tady leží rozházené přes celou cestu.
+text: A u vody je ticho.
+word d: děda
+word k: říkal
+word p: pomalu
+word n: šum
+word m: šum
+gate S: -
+gate O: d>k>p
+map:
+#############
+##n#.##.#####
+#@.d..S.p.kO>#
+##m#*##.#####
 #############
 ---
 title: Ema a děda
@@ -139,18 +146,23 @@ map:
 title: Pravda
 cap: 4
 text: Ema píše: „A co mě tam děda učil?"
-text: Odpověď je tady, rozházená po břehu. Poskládej první pravdivou větu o dědovi.
+text: Odpověď leží rozházená po břehu. Poskládej první pravdivou větu o dědovi.
 word d: děda
 word t: tě
 word u: učil
 word c: čekat
 word n: šum
 word m: šum
+word o: šum
 gate S: -
 gate O: d>t>u>c
+after: Děda tě učil čekat.
+after: Ema: Jo. Přesně tak.
+after: Ema: Seděli jsme tam celý ráno a nic. A on byl stejně spokojenej.
+after: Je to první věta o dědovi, kterou nemusíš hádat.
 map:
 #############
-##m#u########
-#@.d..S.c.tO>#
-##n#*########
+##o#*##c#n###
+#@.d..S.u.tO>#
+##.#.##.#m###
 #############
