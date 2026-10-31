@@ -26,35 +26,24 @@ map:
 #########_######
         ###
 ---
-title: Dvojče
-cap: 2
-text: Děda měl psa. Jmenovala se Bára.
-text: Tak proč ji vidíš dvakrát?
-word b: pes
-word a: Bára
-word x: ~Bára
-gate A: !a b
-map:
-###############
-#@.b^~~a..x.A>#
-########_######
-       ###
----
-title: Horečka
+title: Dva břehy
 cap: 2
 hot: 1
-text: Jezero. Ryby. Velryby ne.
-text: Probouzíš se rozpálený a oranžová deska tu není. Co vychladne, už se neohřeje.
-word a: jezero
-word b: ryba
-word x: ~velryba
+text: Bára ráda plavala. Jezero má dva břehy.
+text: Jsi rozpálený a oranžová deska tu není. Co vychladne, už se neohřeje.
+word a: Bára
+word b: jezero
+word x: ~vlk
+word y: ~moře
 gate A: !a b
 map:
-##############
-#a~~.@.x._.b.#
-############A#
-           #>#
-           ###
+#############
+#ax~~.@.~~.b#
+#####_.######
+######y#
+######A#
+######>#
+########
 ---
 title: Zapomenout
 cap: 2
@@ -100,29 +89,11 @@ map:
 #@^~a.x=*.b_A>#
 ###############
 ---
-title: Bez chladu
-cap: 2
-notes: 1
-text: Děda nikdy nespěchal.
-text: Za branou pravdy je mlha a modrá deska tu není. Zůstaň horký – a přesto čistý.
-word a: pomalu
-word b: jezero
-word x: ~rychle
-word z: ~hned
-word y: ~moře
-gate A: a b
-gate B: !
-map:
-##############
-#@^x.a.z.B~y~#
-#####=##*###b#
-###########>A#
-##############
----
 title: Místo
 cap: 3
+notes: 1
 text: Ema píše: A jak mluvil?
-text: Odpověď má tři slova a okno tři místa. Kdo je obsadí první?
+text: Tři slova, tři místa v okně. Jedno ti ukradne sen. Kam se dá sen odložit?
 word a: děda
 word b: mluvil
 word c: pomalu
@@ -130,8 +101,47 @@ word y: ~pomalu
 gate A: !a>b>c
 map:
 #############
-##a#b########
-#@....^y~cA>#
+#@a.b^y~c_A>#
+######=######
+#############
+---
+title: Bez chladu
+cap: 2
+text: Děda nikdy nespěchal.
+text: Za branou pravdy je mlha a modrá deska nikde. Zůstaň horký – a přesto čistý.
+word a: pomalu
+word b: jezero
+word x: ~rychle
+word y: ~hned
+gate B: !a b
+map:
+##############
+#@^.x.a.y.####
+#.#######.####
+#...b.....B~~>#
+##############
+---
+title: Poslední teplo
+cap: 2
+notes: 1
+hot: 1
+text: Děda, Bára, jezero. Každé za jinou mlhou.
+text: Teplo máš naposledy. Okno unese dvě slova, zápis jedno.
+word a: děda
+word b: Bára
+word c: jezero
+word x: ~vlk
+word y: ~moře
+word q: ~loď
+gate A: !a b c
+map:
+######>######
+######A######
+######q######
+#ax~~.@.~~yb#
+#####_.=#####
+######~######
+######c######
 #############
 ---
 title: Příběh
@@ -147,11 +157,15 @@ word y: ~pomalu
 word z: ~rychle
 gate S: -
 gate A: !a>b>c
+after: Na displeji stojí: Děda mluvil pomalu.
+after: Ema: Jo. Přesně tak mluvil.
+after: Ema: Tos nevymyslel, viď?
+after: Nevymyslel. Jen našel, co zůstalo.
 map:
 ################
-#....#a#b####=##
-#@w.=S...^z.y~##
-#.....#######c_#
-#############A##
-            #>#
-            ###
+#####a#b####=###
+#@w.S...^z.y~###
+###=########c_##
+############A###
+############>###
+################

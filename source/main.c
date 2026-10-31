@@ -1017,9 +1017,9 @@ static void draw_top_play(void) {
 static void draw_end_top(void) {
 	draw_backdrop(1);
 	float a = fminf(1, screenTime / 2);
-	text("Lum si to nezapamatuje.", TOP_W / 2, 84, 0.9f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
+	text("OKNO", TOP_W / 2, 70, 1.6f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
 	float b = fminf(1, fmaxf(0, screenTime - 2.5f) / 2);
-	text("Ale poznámka ano.", TOP_W / 2, 124, 0.75f, rgba(0.7f, 1, 0.8f, b), C2D_AlignCenter, 0, 1.5f);
+	text("poznámka uložena", TOP_W / 2, 134, 0.65f, rgba(0.7f, 1, 0.8f, b), C2D_AlignCenter, 0, 1.5f);
 	draw_vignette();
 }
 
