@@ -141,8 +141,8 @@ static const Col PALETTE[] = {
 	{ 1.00f, 0.50f, 0.70f },  // rose
 	{ 0.55f, 1.00f, 0.65f },  // mint
 	{ 0.75f, 0.60f, 1.00f },  // violet
-	{ 1.00f, 0.62f, 0.40f },  // coral
 	{ 0.95f, 0.95f, 0.55f },  // lemon
+	{ 1.00f, 0.62f, 0.40f },  // coral
 	{ 0.50f, 0.95f, 0.90f },  // teal
 };
 static const Col NOISE = { 0.55f, 0.57f, 0.65f };
