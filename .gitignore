@@ -8,3 +8,4 @@ __pycache__/
 fonts/Roboto-Light.ttf
 okno
 okno-save/
+dist/
