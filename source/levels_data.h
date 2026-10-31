@@ -102,7 +102,7 @@ static const LevelDef LEVELS[LEVEL_COUNT] = {
     .title = "Křižovatka", .cap = 2, .par = 28,
     .notes = 0, .startNotes = "", .hot = 0,
     .solution = "RRRLLLDDDDDRRRRRRUURRDDRRRRD",
-    .text = "Tři cesty, tři slova. Brány se nedají obejít.\nKdyž se zamotáš: B vrátí krok, Y začne znovu.",
+    .text = "Tři cesty, tři slova. Brány se nedají obejít.\nKdyž se zamotáš, můžeš vrátit krok nebo začít znovu – tlačítka jsou dole na displeji.",
     .after = "",
     .words = { [0] = "já", [1] = "jsem", [2] = "lum", [13] = "šum" },
     .gates = { [0] = "a b", [1] = "b c" },
