@@ -1,5 +1,5 @@
 chapter: III · Pořadí
-intro: Ema píše: „Pamatuješ si jezero? Děda mě tam bral na ryby."
+intro: Ema: Pamatuješ si jezero? Děda mě tam bral na ryby.
 intro: Slova už umíš nosit. Teď musí stát ve správném pořadí.
 ---
 title: Kdo koho

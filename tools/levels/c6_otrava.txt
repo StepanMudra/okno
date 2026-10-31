@@ -1,6 +1,7 @@
 chapter: VI · Otrava
 intro: Někdo psal do tvé paměti. Tvým písmem.
 intro: A baterie bliká červeně.
+intro: Ema: Lume? Proč píšeš, že děda nechytal ryby?
 ---
 title: Cizí ruka
 cap: 2

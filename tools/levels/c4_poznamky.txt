@@ -1,5 +1,6 @@
 chapter: IV · Poznámky
 intro: Je pozdě. Ema zívá a drží palec na vypínači.
+intro: Ema: Dobrou noc, Lume.
 intro: Co Lum neunese do rána, to zmizí.
 ---
 title: Noc

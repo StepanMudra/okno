@@ -897,6 +897,62 @@ static void draw_bottom_play(void) {
 		C2D_AlignRight, 0, 0);
 }
 
+static void round_rect(float x, float y, float w, float h, float r, u32 c) {
+	C2D_DrawRectSolid(x + r, y, 0.5f, w - 2 * r, h, c);
+	C2D_DrawRectSolid(x, y + r, 0.5f, r, h - 2 * r, c);
+	C2D_DrawRectSolid(x + w - r, y + r, 0.5f, r, h - 2 * r, c);
+	C2D_DrawCircleSolid(x + r, y + r, 0.5f, r, c);
+	C2D_DrawCircleSolid(x + w - r, y + r, 0.5f, r, c);
+	C2D_DrawCircleSolid(x + r, y + h - r, 0.5f, r, c);
+	C2D_DrawCircleSolid(x + w - r, y + h - r, 0.5f, r, c);
+}
+
+// Chapter card: narrator lines are typed, lines starting with "Ema:" arrive as chat bubbles.
+static float draw_story(const char* story, float t) {
+	char line[256];
+	float y = 22, at = 0.3f;
+	const char* p = story;
+	while (*p) {
+		const char* e = strchr(p, '\n');
+		int n = e ? e - p : (int)strlen(p);
+		if (n > 255) n = 255;
+		memcpy(line, p, n);
+		line[n] = 0;
+		p += n + (e ? 1 : 0);
+		if (t < at) break;
+		if (strncmp(line, "Ema:", 4) == 0) {
+			const char* msg = line + 4;
+			while (*msg == ' ') msg++;
+			if (t < at + 0.9f) {
+				// "Ema píše…" with bouncing dots
+				text("Ema píše", BOT_W - 64, y, 0.45f, rgba(0.7f, 0.75f, 1, 0.7f), C2D_AlignRight, 0, 0);
+				for (int d = 0; d < 3; d++)
+					C2D_DrawCircleSolid(BOT_W - 52 + d * 7, y + 8 - fmaxf(0, sinf(t * 9 - d)) * 3, 0.5f, 2,
+						rgba(0.7f, 0.75f, 1, 0.8f));
+				return y;
+			}
+			float a = fminf(1, (t - at - 0.9f) * 4);
+			float w = text_width(msg, 0.55f) * 1.06f, lines = ceilf(w / 220), bw = fminf(w, 220) + 28;
+			float bh = lines * 16 + 14, bx = BOT_W - 18 - bw, by = y + 12;
+			text("Ema", BOT_W - 22, y - 2, 0.4f, rgba(1, 0.75f, 0.85f, 0.85f * a), C2D_AlignRight, 0, 0);
+			round_rect(bx, by, bw, bh, 9, rgba(1, 0.62f, 0.76f, 0.9f * a));
+			C2D_DrawTriangle(bx + bw - 14, by + bh - 1, rgba(1, 0.62f, 0.76f, 0.9f * a), bx + bw - 2, by + bh + 7,
+				rgba(1, 0.62f, 0.76f, 0.9f * a), bx + bw - 24, by + bh - 1, rgba(1, 0.62f, 0.76f, 0.9f * a), 0.5f);
+			text(msg, bx + 14, by + 7, 0.55f, rgba(0.1f, 0.04f, 0.08f, a), 0, 222, 0);
+			y += bh + 30;
+			at += 1.6f;
+		} else {
+			int chars = 0;
+			for (const char* c = line; *c; c++) chars += (*c & 0xC0) != 0x80;
+			draw_typed(line, 20, y, 0.6f, rgba(0.85f, 0.88f, 1, 1), BOT_W - 40, t - at, 40);
+			float w = text_width(line, 0.6f);
+			y += ceilf(w / (BOT_W - 40)) * 18 + 12;
+			at += chars / 40.0f + 0.5f;
+		}
+	}
+	return y;
+}
+
 static void draw_bottom_plain(const char* body, const char* foot, float t) {
 	C2D_DrawRectangle(0, 0, 0, BOT_W, SCR_H, rgba(0.05f, 0.06f, 0.12f, 1), rgba(0.05f, 0.06f, 0.12f, 1),
 		rgba(0.02f, 0.02f, 0.05f, 1), rgba(0.02f, 0.02f, 0.05f, 1));
@@ -1314,8 +1370,8 @@ int main(void) {
 			break;
 		}
 		case SC_CHAPTER:
-			draw_bottom_plain(CHAPTERS[chapter_of(levelIdx)].intro, screenTime > 1.5f ? "A — pokračovat" : NULL,
-				screenTime);
+			draw_bottom_plain(NULL, screenTime > 1.5f ? "A — pokračovat" : NULL, screenTime);
+			draw_story(CHAPTERS[chapter_of(levelIdx)].intro, screenTime);
 			break;
 		case SC_PLAY: draw_bottom_play(); break;
 		case SC_SOLVED: {

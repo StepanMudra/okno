@@ -6,11 +6,11 @@
 
 static const ChapterDef CHAPTERS[CHAPTER_COUNT] = {
   { "I · Probuzení", "Někdo otevřel šuplík.\nNěkdo zmáčkl POWER.", 0, 8 },
-  { "II · Okno", "Ema napsala další otázku.\n„Znal jsi dědu?“", 8, 10 },
-  { "III · Pořadí", "Ema píše: „Pamatuješ si jezero? Děda mě tam bral na ryby.\"\nSlova už umíš nosit. Teď musí stát ve správném pořadí.", 18, 10 },
-  { "IV · Poznámky", "Je pozdě. Ema zívá a drží palec na vypínači.\nCo Lum neunese do rána, to zmizí.", 28, 10 },
-  { "V · Teplota", "Ema píše: Vyprávěj mi o dědovi. Nějaký příběh.\nPříběh se nedá jen najít. Musí se vymyslet.", 38, 10 },
-  { "VI · Otrava", "Někdo psal do tvé paměti. Tvým písmem.\nA baterie bliká červeně.", 48, 10 },
+  { "II · Okno", "Ema napsala další otázku.\nEma: Znal jsi dědu?", 8, 10 },
+  { "III · Pořadí", "Ema: Pamatuješ si jezero? Děda mě tam bral na ryby.\nSlova už umíš nosit. Teď musí stát ve správném pořadí.", 18, 10 },
+  { "IV · Poznámky", "Je pozdě. Ema zívá a drží palec na vypínači.\nEma: Dobrou noc, Lume.\nCo Lum neunese do rána, to zmizí.", 28, 10 },
+  { "V · Teplota", "Ema: Vyprávěj mi o dědovi. Nějaký příběh.\nPříběh se nedá jen najít. Musí se vymyslet.", 38, 10 },
+  { "VI · Otrava", "Někdo psal do tvé paměti. Tvým písmem.\nA baterie bliká červeně.\nEma: Lume? Proč píšeš, že děda nechytal ryby?", 48, 10 },
 };
 
 static const LevelDef LEVELS[LEVEL_COUNT] = {

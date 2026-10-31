@@ -1,5 +1,5 @@
 chapter: V · Teplota
-intro: Ema píše: Vyprávěj mi o dědovi. Nějaký příběh.
+intro: Ema: Vyprávěj mi o dědovi. Nějaký příběh.
 intro: Příběh se nedá jen najít. Musí se vymyslet.
 ---
 title: Teplo

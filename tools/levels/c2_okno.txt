@@ -1,6 +1,6 @@
 chapter: II · Okno
 intro: Ema napsala další otázku.
-intro: „Znal jsi dědu?“
+intro: Ema: Znal jsi dědu?
 ---
 title: Otázka
 cap: 2
