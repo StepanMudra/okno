@@ -33,6 +33,20 @@ Sound needs the DSP firmware dump (`/3ds/dspfirm.cdc`).
 
 D-pad or Circle Pad – move · **B** undo · **Y** restart · **SELECT** hint (shows the shortest path piece by piece) · **START** menu
 
+## Play on a computer (Linux, macOS, Windows)
+
+The `pc` branch builds the same game with SDL2: both screens in one window, keyboard or gamepad.
+
+```bash
+# Debian/Ubuntu: sudo apt install build-essential libsdl2-dev   (Fedora: SDL2-devel, Arch: sdl2, macOS: brew install sdl2)
+make -f Makefile.pc
+./okno
+```
+
+Arrows / WASD move · **Z** or Backspace undo · **R** restart · **H** hint · **Enter** confirm · **Esc** menu · **F11** fullscreen.
+Progress is saved in `okno-save/` next to where you start it. Without a 3D screen, everything sways slowly instead –
+watch which words float differently.
+
 ## Build
 
 devkitARM with libctru, citro2d and citro3d:
