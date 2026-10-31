@@ -43,7 +43,8 @@ def show(r, state, moves):
                 ch = "."
             elif c.islower():
                 present = c not in win and c not in notes and (not bl.is_halluc(r, c) or hot)
-                ch = c if present else "."
+                held = c in win or c in notes
+                ch = c if present else ("o" if held else ".")
             elif c.isupper():
                 ch = "." if c in opened else c
             elif c == "~":
@@ -54,6 +55,7 @@ def show(r, state, moves):
         if row.strip():
             print("  " + row)
     print()
+    print("(o = home tile of a word you hold; it returns there when forgotten)")
     print("Words on the map:", ", ".join(f"{w}={word_label(r, w)}" for w in sorted(r.words)
                                        if any(w in row for row in r.grid)))
     for g in sorted(r.gates):

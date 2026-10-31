@@ -698,6 +698,14 @@ static void draw_room(void) {
 			}
 		}
 
+	// ghosts: home tiles of words that are held (they come back here when forgotten)
+	for (int w = 0; w < 26; w++) {
+		if (homeX[w] < 0 || word_on_floor(w) || wordReturn[w] > 0) continue;
+		if (is_halluc(w) && !st.hot && !held(&st, w)) continue;
+		Col c = word_color(wtext(w));
+		V2 p = tile_px(homeX[w], homeY[w]);
+		spr(sprites_ring_idx, p.x + sx, p.y, 0.2f, 0.42f, 0, rgba(c.r, c.g, c.b, 0.22f));
+	}
 	// words lying on the floor
 	for (int w = 0; w < 26; w++) {
 		if (!word_on_floor(w)) continue;

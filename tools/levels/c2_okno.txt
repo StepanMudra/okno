@@ -62,26 +62,22 @@ map:
       #.S..#
       ######
 ---
-title: Dvě strany
+title: Oklika
 cap: 2
-text: Ema: „Jaký byl?“ V paměti se pořád opakuje jedno jeho slovo.
-text: Z téhle strany k tichu nedojdeš.
+text: Ema: „Jaký byl?“ Děda by to věděl. Jenže mezi ním a odpovědí leží studna.
+text: Cesta zpátky se otevře jen Emě.
 word d: děda
 word e: Ema
 word x: šum
-word p: pomalu
-gate H: d p
-gate S: -
+gate T: e
+gate B: d e
 map:
 #############
-#@..d..e....#
-#.#########.#
-#x#########*#
-#S###p#####.#
-#...........#
-######H######
-     #>#
-     ###
+#@.d.*....B>#
+#.#####.e####
+#.#####...#
+#.T.x.....#
+###########
 ---
 title: Brány
 cap: 2
@@ -136,44 +132,42 @@ map:
 #@.....An.....B>
 ################
 ---
-title: Uložená hra
+title: Rybáři
 cap: 4
 text: Uložená hra. Dva rybáři: DĚDA a EMA. Hráli ji spolu každý večer.
-text: Konečně uneseš čtyři slova. Jenže šum taky.
-word d: děda
+text: Do okna se teď vejdou čtyři slova. Jedno místo zbude.
+word a: děda
 word b: Ema
-word j: prut
-word r: ryba
+word c: prut
 word n: šum
 word m: šum
-gate A: d b j r
+gate G: a b c
 map:
-################
-#d###b#j###r####
-#.###.#.###.####
-#@.n.....m...A>#
-################
+##############
+#a#b#c########
+#.#.#.########
+#@.......nm.G>#
+###############
 ---
 title: Odpověď
 cap: 3
 text: Ema čeká. Kurzor bliká: „Znal jsi dědu?“
-text: Neznal. Ale už víš, kde hledat.
+text: Neznal. Ale za tečkou věta nekončí.
 word v: nevím
 word a: ale
 word n: najdu
 word h: ho
 word b: Bára
-word m: šum
 gate N: v
 gate S: -
 gate H: a n h
 map:
-##############
-#v#a####n#h###
-#.#.####.#.###
-#@...b...m..N#
-###########*.#
-############S#
-############H#
-############>#
-##############
+#############
+#v#a###n#h###
+#.#.###.#.###
+#@...b.....N#
+##########*.#
+###########S#
+###########H#
+###########>#
+#############
