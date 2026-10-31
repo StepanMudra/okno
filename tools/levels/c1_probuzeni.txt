@@ -56,7 +56,7 @@ map:
 title: Křižovatka
 cap: 2
 text: Tři cesty, tři slova. Brány se nedají obejít.
-text: Když se zamotáš: B vrátí krok, Y začne znovu.
+text: Když se zamotáš, můžeš vrátit krok nebo začít znovu – tlačítka jsou dole na displeji.
 word a: já
 word b: jsem
 word c: lum

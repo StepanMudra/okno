@@ -149,12 +149,17 @@ static const Col NOISE = { 0.55f, 0.57f, 0.65f };
 
 static bool is_noise(const char* w) { return w && strcmp(w, "šum") == 0; }
 
+// Colours are handed out per room: every different word text gets its own palette colour
+// (a word and its fake twin share one, of course). Filled by assign_colors() on room load.
+#define MAX_COLORED 26
+static const char* coloredText[MAX_COLORED];
+static int coloredCount;
+
 static Col word_color(const char* w) {
 	if (is_noise(w)) return NOISE;
-	// colour by word text, so the same word looks the same everywhere
-	u32 h = 2166136261u;
-	for (const char* p = w; *p; p++) h = (h ^ (u8)*p) * 16777619u;
-	return PALETTE[h % (sizeof PALETTE / sizeof PALETTE[0])];
+	for (int i = 0; i < coloredCount; i++)
+		if (strcmp(coloredText[i], w) == 0) return PALETTE[i % (sizeof PALETTE / sizeof PALETTE[0])];
+	return PALETTE[0];
 }
 
 // ---------------------------------------------------------------------------
@@ -350,6 +355,13 @@ static void load_level(int idx) {
 			}
 		}
 	for (int g = 0; g < 26; g++) parse_req(g, L->gates[g]);
+	coloredCount = 0;
+	for (int w = 0; w < 26; w++) {
+		if (!L->words[w] || is_noise(wtext(w))) continue;
+		bool seen = false;
+		for (int i = 0; i < coloredCount; i++) seen |= strcmp(coloredText[i], wtext(w)) == 0;
+		if (!seen) coloredText[coloredCount++] = wtext(w);
+	}
 	for (const char* n = L->startNotes; n && *n && st.nnotes < MAXNOTES; n++)
 		if (*n >= 'a' && *n <= 'z') st.notes[st.nnotes++] = *n - 'a';
 	st.hot = L->hot;
