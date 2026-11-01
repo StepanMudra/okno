@@ -1,14 +1,23 @@
 chapter: III · Pořadí
+en chapter: III · Order
 intro: Ema: Pamatuješ si jezero? Děda mě tam bral na ryby.
+en intro: Ema: Do you remember the lake? Grandpa used to take me fishing there.
 intro: Slova už umíš nosit. Teď musí stát ve správném pořadí.
+en intro: You can carry words now. Next they have to stand in the right order.
 ---
 title: Kdo koho
+en title: Who Caught Whom
 cap: 2
 text: Brána se šipkami chce slova popořadě – zleva doprava, jak je sbíráš.
+en text: A gate with arrows wants the words in order – left to right, as you collect them.
 text: „Děda chytil rybu" není „ryba chytila dědu".
+en text: “Grandpa caught a fish” is not “a fish caught grandpa”.
 text: Když se spleteš, studna tě vyprázdní.
+en text: If you get it wrong, the well empties you.
 word d: děda
+en word d: grandpa
 word r: ryba
+en word r: fish
 gate A: d>r
 map:
 ############
@@ -18,12 +27,18 @@ map:
 ############
 ---
 title: Cestou zpět
+en title: Backwards
 cap: 3
 text: Děda říkal: nahodit, čekat, táhnout. Přesně v tomhle pořadí.
+en text: Grandpa used to say: cast, wait, pull. Exactly in that order.
 text: Tady to leží pozpátku.
+en text: Here it all lies backwards.
 word t: táhnout
+en word t: pull
 word c: čekat
+en word c: wait
 word n: nahodit
+en word n: cast
 gate A: n>c>t
 map:
 ############
@@ -32,13 +47,20 @@ map:
 ############
 ---
 title: Šum
+en title: Static
 cap: 2
 text: Ryba ti leží v cestě a studna tu není. Jen šum.
+en text: The fish lies in your way and there is no well. Only static.
 text: I šum umí vytlačit staré slovo z okna.
+en text: Static can push an old word out of the window, too.
 text: Co vytlačíš, vrátí se na své místo – a příště ho zase sebereš.
+en text: What you push out goes back to its place – and next time you pick it up again.
 word r: ryba
+en word r: fish
 word d: děda
+en word d: grandpa
 word n: šum
+en word n: static
 gate A: d>r
 map:
 ############
@@ -47,11 +69,16 @@ map:
 ############
 ---
 title: Klíč
+en title: The Key
 cap: 2
 text: Bez dědy k vodě nesmíš.
+en text: Without grandpa you may not go to the water.
 text: Ale co jednou otevřeš, zůstane otevřené.
+en text: But what you open once stays open.
 word d: děda
+en word d: grandpa
 word r: ryba
+en word r: fish
 gate C: d
 gate B: r>d
 map:
@@ -62,12 +89,18 @@ map:
 ############
 ---
 title: Potichu
+en title: Quietly
 cap: 2
 text: „U vody se nemluví, ryby slyší." Tak to děda říkal.
+en text: “No talking by the water, the fish can hear.” That's what grandpa said.
 text: Tichá brána pustí jen prázdné okno.
+en text: The silent gate lets only an empty window through.
 word d: děda
+en word d: grandpa
 word r: ryba
+en word r: fish
 word n: šum
+en word n: static
 gate S: -
 gate A: d>r
 map:
@@ -77,13 +110,20 @@ map:
 ##############
 ---
 title: Bára
+en title: Bára
 cap: 3
 text: Bára štěkala na ryby. Pokaždé. Děda se jí smál.
+en text: Bára barked at the fish. Every time. Grandpa laughed at her.
 text: Tady ale všechno leží obráceně – a okno má jen tři místa.
+en text: But here everything lies the other way round – and the window has only three places.
 word b: Bára
+en word b: Bára
 word s: štěkala
+en word s: barked
 word r: na ryby
+en word r: at fish
 word n: šum
+en word n: static
 gate A: b>s>r
 map:
 #############
@@ -93,13 +133,20 @@ map:
 #############
 ---
 title: Před branou
+en title: Before the Gate
 cap: 3
 text: Před branou leží jezero a šum. Kdo jde kolem, sebere je – a něco jiného zapomene.
+en text: The lake and static lie before the gate. Whoever walks past picks them up – and forgets something else.
 text: Vyber si včas, co to bude.
+en text: Choose in time what it will be.
 word d: děda
+en word d: grandpa
 word r: ryba
+en word r: fish
 word j: jezero
+en word j: lake
 word n: šum
+en word n: static
 gate A: d>r
 map:
 #############
@@ -108,14 +155,22 @@ map:
 #############
 ---
 title: Pomalu
+en title: Slowly
 cap: 3
 text: Děda říkal jedno slovo pořád dokola. Tady leží rozházené přes celou cestu.
+en text: Grandpa said one word over and over. Here it lies scattered across the whole path.
 text: A u vody je ticho.
+en text: And by the water it is quiet.
 word d: děda
+en word d: grandpa
 word k: říkal
+en word k: said
 word p: pomalu
+en word p: slowly
 word n: šum
+en word n: static
 word m: šum
+en word m: static
 gate S: -
 gate O: d>k>p
 map:
@@ -126,14 +181,22 @@ map:
 #############
 ---
 title: Ema a děda
+en title: Ema and Grandpa
 cap: 3
 text: Ema a děda, spolu na kraji vody. Bez nich tě brána nepustí.
+en text: Ema and grandpa, together at the water's edge. Without them the gate won't let you through.
 text: Ta druhá chce víc: děda chytal ryby.
+en text: The other one wants more: grandpa caught fish.
 word d: děda
+en word d: grandpa
 word c: chytal
+en word c: caught
 word r: ryby
+en word r: fish
 word e: Ema
+en word e: Ema
 word s: šum
+en word s: static
 gate U: e d
 gate O: d>c>r
 map:
@@ -144,22 +207,36 @@ map:
 #############
 ---
 title: Pravda
+en title: The Truth
 cap: 4
 text: Ema píše: „A co mě tam děda učil?"
+en text: Ema types: “And what did grandpa teach me there?”
 text: Odpověď leží rozházená po břehu. Poskládej první pravdivou větu o dědovi.
+en text: The answer lies scattered along the shore. Put together the first true sentence about grandpa.
 word d: děda
+en word d: grandpa
 word t: tě
+en word t: taught
 word u: učil
+en word u: you
 word c: čekat
+en word c: to wait
 word n: šum
+en word n: static
 word m: šum
+en word m: static
 word o: šum
+en word o: static
 gate S: -
 gate O: d>t>u>c
 after: Děda tě učil čekat.
+en after: Grandpa taught you to wait.
 after: Ema: Jo. Přesně tak.
+en after: Ema: Yeah. Exactly.
 after: Ema: Seděli jsme tam celý ráno a nic. A on byl stejně spokojenej.
+en after: Ema: We sat there all morning and nothing. And he was happy anyway.
 after: Je to první věta o dědovi, kterou nemusíš hádat.
+en after: It is the first sentence about grandpa you don't have to guess.
 map:
 #############
 ##o#*##c#n###

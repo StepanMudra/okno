@@ -1,14 +1,22 @@
 chapter: IV · Poznámky
+en chapter: IV · Notes
 intro: Je pozdě. Ema zívá a drží palec na vypínači.
+en intro: It's late. Ema yawns, her thumb on the power switch.
 intro: Ema: Dobrou noc, Lume.
+en intro: Ema: Good night, Lum.
 intro: Co Lum neunese do rána, to zmizí.
+en intro: Whatever Lum can't carry until morning disappears.
 ---
 title: Noc
+en title: Night
 cap: 1
 notes: 1
 text: Ema za chvíli konzoli vypne a ty zapomeneš všechno.
+en text: Soon Ema turns the console off and you forget everything.
 text: Kámen = zapíše tvoje nejnovější slovo do poznámek. Studna poznámky nesmaže.
+en text: A stone = writes your newest word into the notes. The well doesn't erase notes.
 word a: zítra
+en word a: tomorrow
 gate A: a
 map:
 ##########
@@ -18,14 +26,20 @@ map:
   ###
 ---
 title: Místo
+en title: Room to Spare
 cap: 1
 notes: 1
 start notes: z
 text: Ráno. V poznámkách svítí „zítra“. Nevíš, kdy jsi to psal.
+en text: Morning. Your notes say “tomorrow”. You don't remember writing it.
 text: Brána počítá i poznámky. Když je stránka plná, staré slovo ustoupí. „Zítra“ nemá kam jít.
+en text: Gates count notes too. On a full page an old word steps aside. “tomorrow” has nowhere to go.
 word z: zítra
+en word z: tomorrow
 word a: dílna
+en word a: workshop
 word b: piliny
+en word b: sawdust
 gate A: z a
 gate B: a b
 map:
@@ -36,13 +50,19 @@ map:
    ######
 ---
 title: Ticho
+en title: Silence
 cap: 2
 notes: 1
 text: Tichá brána chce prázdné okno. Poznámky jí nevadí.
+en text: The silent gate wants an empty window. It doesn't mind notes.
 text: Kámen ale zapíše jen to slovo, které jsi vzal naposled.
+en text: But the stone only writes the word you picked up last.
 word a: Bára
+en word a: Bára
 word n: šum
+en word n: static
 word b: pes
+en word b: dog
 gate A: -
 gate B: a b
 map:
@@ -53,12 +73,17 @@ map:
            ###
 ---
 title: Stráž
+en title: The Watch
 cap: 2
 notes: 2
 text: Noc je dlouhá. Za studnou dojdeš ke kameni vždycky s prázdnýma rukama.
+en text: The night is long. Past the well you always reach the stone empty-handed.
 text: A prázdné ruce kámen potrestá: smaže nejstarší poznámku.
+en text: And the stone punishes empty hands: it erases the oldest note.
 word n: šum
+en word n: static
 word a: pomalu
+en word a: slowly
 gate A: a
 map:
 ##############
@@ -68,13 +93,18 @@ map:
    ###
 ---
 title: Gumování
+en title: Eraser
 cap: 2
 notes: 1
 start notes: a
 text: Ema se ptá, co říkal děda, když spěchala. V poznámce máš „děda“.
+en text: Ema asks what grandpa said when she was in a hurry. Your note says “grandpa”.
 text: Pořadí ale hlídá jen okno. Prázdné okno na kameni poznámku smaže.
+en text: But only the window keeps order. An empty window on the stone erases a note.
 word a: děda
+en word a: grandpa
 word b: říkal
+en word b: said
 gate A: a>b
 map:
 ############
@@ -84,12 +114,17 @@ map:
    ###
 ---
 title: Jedna stránka
+en title: One Page
 cap: 1
 notes: 1
 text: Ema píše: „Byl děda v dílně rád?“ Na poznámky ti zbyla jediná stránka.
+en text: Ema types: “Did grandpa like the workshop?” One page is left for notes.
 text: Otevřená brána zůstane otevřená.
+en text: An open gate stays open.
 word a: dílna
+en word a: workshop
 word b: piliny
+en word b: sawdust
 gate A: a
 gate B: b
 map:
@@ -100,12 +135,17 @@ map:
  #####
 ---
 title: Nejstarší
+en title: The Oldest
 cap: 1
 notes: 2
 text: Když jsou poznámky plné, kámen pustí tu nejstarší. Na tom, co zapíšeš první, záleží.
+en text: When the notes are full, the stone lets go of the oldest one. What you write first matters.
 word a: Bára
+en word a: Bára
 word b: jezero
+en word b: lake
 word c: plavala
+en word c: swam
 gate A: a b
 gate B: a c
 map:
@@ -116,13 +156,19 @@ map:
 #####
 ---
 title: Zpátky domů
+en title: Back Home
 cap: 2
 notes: 1
 text: Ema chce slyšet, jak Bára skákala do vody. Napsané slovo už nevezmeš zpátky.
+en text: Ema wants to hear how Bára jumped into the water. A word you wrote down can't be taken back.
 text: Smažeš ho – a ono čeká tam, kde leželo.
+en text: Erase it – and it waits where it lay.
 word a: Bára
+en word a: Bára
 word b: skočila
+en word b: jumped
 word n: šum
+en word n: static
 gate S: -
 gate B: a>b
 map:
@@ -135,15 +181,23 @@ map:
           ###
 ---
 title: Dílna
+en title: The Workshop
 cap: 2
 notes: 2
 text: Děda v dílně nejdřív hoblíkem, pak pilníkem. Tak to Ema říká.
+en text: In the workshop grandpa used the plane first, then the file. That's how Ema tells it.
 text: Prkno a hřebík si odlož. Ruce budeš potřebovat volné.
+en text: Put the board and the nail aside. You'll need your hands free.
 word c: prkno
+en word c: board
 word d: hřebík
+en word d: nail
 word a: hoblík
+en word a: plane
 word b: pilník
+en word b: file
 word n: šum
+en word n: static
 gate O: a>b
 gate U: c d
 map:
@@ -154,23 +208,36 @@ map:
 ##############
 ---
 title: Do rána
+en title: Until Morning
 cap: 2
 notes: 3
 text: Ema vypíná konzoli. Ráno uvidíš jen poznámky – vejdou se tři slova.
+en text: Ema turns the console off. In the morning you will see only the notes – three words fit.
 text: Na pořadí záleží: kámen u dědy vždycky jednu smaže.
+en text: Order matters: the stone by grandpa always erases one.
 word a: děda
+en word a: grandpa
 word b: pomalu
+en word b: slowly
 word c: Ema
+en word c: Ema
 word x: Bára
+en word x: Bára
 word y: jezero
+en word y: lake
 word n: šum
+en word n: static
 gate O: x>y
 gate T: -
 gate F: a b c
 after: Ráno. Konzole cvakne a obrazovka se rozsvítí.
+en after: Morning. The console clicks and the screen lights up.
 after: V poznámkách stojí: Ema. děda. pomalu.
+en after: The notes say: Ema. grandpa. slowly.
 after: Ema: Ahoj Lume. Pamatuješ si mě?
+en after: Ema: Hi Lum. Do you remember me?
 after: Nepamatuješ. Ale víš, kde začít.
+en after: You don't. But you know where to start.
 map:
 #############
 #a=*@#.Tc####

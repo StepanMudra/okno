@@ -34,7 +34,43 @@ typedef struct {
 	const char* after;      // epilogue shown once the room is solved ("" = none)
 } LevelDef;
 
+// translated texts of a room / chapter (levels_data.h has them for English)
+typedef struct {
+	const char* title;
+	const char* text;
+	const char* after;
+	const char* words[26];
+} LevelText;
+
+typedef struct {
+	const char* title;
+	const char* intro;
+} ChapterText;
+
 #include "levels_data.h"
+
+// language: 0 = čeština, 1 = English. LV / CH are the rooms and chapters in the current language.
+static int lang;
+#define T(cs, en) (lang ? (en) : (cs))
+static LevelDef LV[LEVEL_COUNT];
+static ChapterDef CH[CHAPTER_COUNT];
+
+static void apply_language(void) {
+	for (int i = 0; i < LEVEL_COUNT; i++) {
+		LV[i] = LEVELS[i];
+		if (!lang) continue;
+		LV[i].title = LEVELS_EN[i].title;
+		LV[i].text = LEVELS_EN[i].text;
+		LV[i].after = LEVELS_EN[i].after;
+		memcpy(LV[i].words, LEVELS_EN[i].words, sizeof LV[i].words);
+	}
+	for (int c = 0; c < CHAPTER_COUNT; c++) {
+		CH[c] = CHAPTERS[c];
+		if (!lang) continue;
+		CH[c].title = CHAPTERS_EN[c].title;
+		CH[c].intro = CHAPTERS_EN[c].intro;
+	}
+}
 
 #define TOP_W 400
 #define BOT_W 320
@@ -137,7 +173,7 @@ static const Col PALETTE[] = {
 };
 static const Col NOISE = { 0.55f, 0.57f, 0.65f };
 
-static bool is_noise(const char* w) { return w && strcmp(w, "šum") == 0; }
+static bool is_noise(const char* w) { return w && (strcmp(w, "šum") == 0 || strcmp(w, "static") == 0); }
 
 // Colours are handed out per room: every different word text gets its own palette colour
 // (a word and its fake twin share one, of course). Filled by assign_colors() on room load.
@@ -328,7 +364,7 @@ static void reset_visuals(void) {
 
 static void load_level(int idx) {
 	levelIdx = idx;
-	L = &LEVELS[idx];
+	L = &LV[idx];
 	memset(&st, 0, sizeof st);
 	memset(homeX, -1, sizeof homeX);
 	memset(homeY, -1, sizeof homeY);
@@ -530,13 +566,14 @@ static int try_move(int dx, int dy) {
 		Req plain = *r;
 		plain.truth = false;
 		if (r->truth && satisfied(&plain, &st)) {
-			snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
+			snprintf(m, sizeof m, T("Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.", "The gate of truth won't let you through. Something you carry is not true."));
 		} else if (r->kind == REQ_EMPTY) {
-			snprintf(m, sizeof m, "Brána ticha: projdeš jen s prázdným oknem.");
+			snprintf(m, sizeof m, T("Brána ticha: projdeš jen s prázdným oknem.", "Gate of silence: you pass only with an empty window."));
 		} else if (r->n == 0) {
-			snprintf(m, sizeof m, "Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.");
+			snprintf(m, sizeof m, T("Brána pravdy tě nepustí. Něco z toho, co neseš, není pravda.", "The gate of truth won't let you through. Something you carry is not true."));
 		} else {
-			int n = snprintf(m, sizeof m, r->kind == REQ_ORDERED ? "Brána chce v pořadí: " : "Brána chce: ");
+			int n = snprintf(m, sizeof m, "%s", r->kind == REQ_ORDERED ? T("Brána chce v pořadí: ", "The gate wants, in this order: ")
+				: T("Brána chce: ", "The gate wants: "));
 			for (int i = 0; i < r->n && n < (int)sizeof m - 20; i++)
 				n += snprintf(m + n, sizeof m - n, "%s%s", i ? (r->kind == REQ_ORDERED ? " › " : " + ") : "",
 					wtext(r->w[i]));
@@ -616,13 +653,26 @@ static bool word_on_floor(int w) { return word_present(&st, w) && wordReturn[w] 
 
 static int saveLevel, maxLevel;  // current room, furthest room ever reached
 
+// 3DS has no Czech system language, so a new player gets English unless the system says Czech (PC)
+static int system_lang_english(void) {
+#ifdef PC
+	return !pc_system_lang_czech();
+#else
+	return 1;
+#endif
+}
+
 static void load_save(void) {
 	FILE* f = fopen(SAVE_PATH, "r");
 	saveLevel = maxLevel = 0;
+	lang = system_lang_english();
 	if (f) {
-		if (fscanf(f, "%d %d", &saveLevel, &maxLevel) < 1) saveLevel = 0;
+		int l = 0;  // saves from before the language choice were Czech
+		if (fscanf(f, "%d %d %d", &saveLevel, &maxLevel, &l) < 1) saveLevel = 0;
+		lang = l == 1;
 		fclose(f);
 	}
+	apply_language();
 	if (saveLevel < 0 || saveLevel >= LEVEL_COUNT) saveLevel = 0;
 	if (maxLevel < saveLevel || maxLevel >= LEVEL_COUNT) maxLevel = saveLevel;
 }
@@ -634,14 +684,14 @@ static void write_save(int lvl) {
 	mkdir(SAVE_DIR, 0777);
 	FILE* f = fopen(SAVE_PATH, "w");
 	if (f) {
-		fprintf(f, "%d %d\n", saveLevel, maxLevel);
+		fprintf(f, "%d %d %d\n", saveLevel, maxLevel, lang);
 		fclose(f);
 	}
 }
 
 static int chapter_of(int lvl) {
 	for (int c = 0; c < CHAPTER_COUNT; c++)
-		if (lvl >= CHAPTERS[c].first && lvl < CHAPTERS[c].first + CHAPTERS[c].count) return c;
+		if (lvl >= CH[c].first && lvl < CH[c].first + CH[c].count) return c;
 	return 0;
 }
 
@@ -902,7 +952,8 @@ static int title_items(int* ids) {
 	if (saveLevel > 0) ids[n++] = 0;
 	if (maxLevel > 0) ids[n++] = 1;
 	ids[n++] = 2;
-	ids[n++] = 3;
+	ids[n++] = 3;  // language
+	ids[n++] = 4;
 	return n;
 }
 
@@ -926,7 +977,7 @@ static void start_level(int idx) {
 	load_level(idx);
 	write_save(idx);
 	int ch = chapter_of(idx);
-	go(CHAPTERS[ch].first == idx ? SC_CHAPTER : SC_PLAY);
+	go(CH[ch].first == idx ? SC_CHAPTER : SC_PLAY);
 }
 
 // typewriter: number of bytes covering the first n UTF-8 characters
@@ -950,11 +1001,11 @@ static void draw_typed(const char* s, float x, float y, float scale, u32 color, 
 }
 
 // Touch buttons along the bottom of the lower screen (mouse on PC).
-typedef struct { float x, y, w, h; const char* label; u32 key; } TouchButton;
+typedef struct { float x, y, w, h; const char* label[2]; u32 key; } TouchButton;
 static const TouchButton TOUCH_BUTTONS[3] = {
-	{ 70, 212, 76, 22, "zpět", KEY_B },
-	{ 152, 212, 76, 22, "znovu", KEY_Y },
-	{ 234, 212, 76, 22, "rada", KEY_SELECT },
+	{ 70, 212, 76, 22, { "zpět", "undo" }, KEY_B },
+	{ 152, 212, 76, 22, { "znovu", "restart" }, KEY_Y },
+	{ 234, 212, 76, 22, { "rada", "hint" }, KEY_SELECT },
 };
 static int touchFlash = -1;
 static float touchFlashTime;
@@ -978,16 +1029,16 @@ static void draw_bottom_play(void) {
 		rgba(0.02f, 0.02f, 0.05f, 1), rgba(0.02f, 0.02f, 0.05f, 1));
 	int ch = chapter_of(levelIdx);
 	char head[128];
-	snprintf(head, sizeof head, "%s  ·  %s", CHAPTERS[ch].title, L->title);
+	snprintf(head, sizeof head, "%s  ·  %s", CH[ch].title, L->title);
 	text(head, 12, 8, 0.55f, rgba(0.8f, 0.82f, 1, 0.9f), 0, 0, 0);
-	snprintf(head, sizeof head, "%d / %d", levelIdx - CHAPTERS[ch].first + 1, CHAPTERS[ch].count);
+	snprintf(head, sizeof head, "%d / %d", levelIdx - CH[ch].first + 1, CH[ch].count);
 	text(head, BOT_W - 12, 8, 0.5f, rgba(0.6f, 0.62f, 0.8f, 0.8f), C2D_AlignRight, 0, 0);
 
 	// the window
 	float slotW = fminf(70, (BOT_W - 40.0f) / L->cap - 6), slotH = 30;
 	float total = L->cap * (slotW + 6) - 6, x0 = (BOT_W - total) / 2, y0 = 44;
-	text("tohle zapomeneš první", x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
-	text("okno", x0 + total, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.8f), C2D_AlignRight, 0, 0);
+	text(T("tohle zapomeneš první", "you forget this first"), x0, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), 0, 0, 0);
+	text(T("okno", "window"), x0 + total, y0 - 14, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.8f), C2D_AlignRight, 0, 0);
 	for (int i = 0; i < L->cap; i++) {
 		float x = x0 + i * (slotW + 6);
 		bool filled = i < st.nwin;
@@ -1010,7 +1061,7 @@ static void draw_bottom_play(void) {
 	float ty = 92;
 	if (L->notes > 0) {
 		float nw = 64, ny = y0 + 50, nx0 = (BOT_W - (L->notes * (nw + 6) - 6)) / 2;
-		text("poznámky – přežijí studnu i noc", nx0, ny - 13, 0.42f, rgba(0.6f, 1, 0.75f, 0.7f), 0, 0, 0);
+		text(T("poznámky – přežijí studnu i noc", "notes – they survive the well and the night"), nx0, ny - 13, 0.42f, rgba(0.6f, 1, 0.75f, 0.7f), 0, 0, 0);
 		for (int i = 0; i < L->notes; i++) {
 			float x = nx0 + i * (nw + 6);
 			bool filled = i < st.nnotes;
@@ -1026,7 +1077,7 @@ static void draw_bottom_play(void) {
 	for (int y = 0; y < GH && !usesHeat; y++)
 		usesHeat = strchr(L->map[y], '^') || strchr(L->map[y], '~');
 	if (usesHeat)
-		text(st.hot ? "teplota: vysoká – vidíš i to, co není" : "teplota: nízká", BOT_W - 12, SCR_H - 46, 0.42f,
+		text(st.hot ? T("teplota: vysoká – vidíš i to, co není", "temperature: high – you see things that aren't there") : T("teplota: nízká", "temperature: low"), BOT_W - 12, SCR_H - 46, 0.42f,
 			st.hot ? rgba(1, 0.6f, 0.35f, 0.9f) : rgba(0.5f, 0.8f, 1, 0.8f), C2D_AlignRight, 0, 0);
 	C2D_DrawRectSolid(12, ty - 6, 0.5f, BOT_W - 24, 1, rgba(0.4f, 0.45f, 0.8f, 0.25f));
 	if (messageTime > 0) {
@@ -1036,7 +1087,7 @@ static void draw_bottom_play(void) {
 	}
 
 	char foot[96];
-	snprintf(foot, sizeof foot, "tahy\n%d", st.moves);
+	snprintf(foot, sizeof foot, T("tahy\n%d", "moves\n%d"), st.moves);
 	text(foot, 14, SCR_H - 31, 0.42f, rgba(0.6f, 0.62f, 0.8f, 0.8f), 0, 0, 0);
 	static const char* keys[3] = { BTN_B, BTN_Y, BTN_SELECT };
 	for (int i = 0; i < 3; i++) {
@@ -1044,7 +1095,7 @@ static void draw_bottom_play(void) {
 		float f = (touchFlash == i && touchFlashTime > 0) ? touchFlashTime * 3 : 0;
 		round_rect(b->x, b->y, b->w, b->h, 8, rgba(0.25f + 0.5f * f, 0.27f + 0.4f * f, 0.5f + 0.2f * f, 0.55f + 0.3f * f));
 		char label[32];
-		snprintf(label, sizeof label, "%s  %s", b->label, keys[i]);
+		snprintf(label, sizeof label, "%s  %s", b->label[lang], keys[i]);
 		text(label, b->x + b->w / 2, b->y + 4, 0.42f, rgba(0.85f, 0.88f, 1, 0.9f), C2D_AlignCenter, 0, 0);
 	}
 }
@@ -1083,7 +1134,7 @@ static float draw_story(const char* story, float t) {
 			while (*msg == ' ') msg++;
 			if (t < at + 0.9f) {
 				// "Ema píše…" with bouncing dots
-				text("Ema píše", BOT_W - 64, y, 0.45f, rgba(0.7f, 0.75f, 1, 0.7f), C2D_AlignRight, 0, 0);
+				text(T("Ema píše", "Ema is typing"), BOT_W - 64, y, 0.45f, rgba(0.7f, 0.75f, 1, 0.7f), C2D_AlignRight, 0, 0);
 				for (int d = 0; d < 3; d++)
 					C2D_DrawCircleSolid(BOT_W - 52 + d * 7, y + 8 - fmaxf(0, sinf(t * 9 - d)) * 3, 0.5f, 2,
 						rgba(0.7f, 0.75f, 1, 0.8f));
@@ -1134,7 +1185,7 @@ static void draw_title_top(void) {
 	blend_normal();
 	float a = fminf(1, screenTime / 1.5f);
 	text("OKNO", TOP_W / 2, 52, 2.4f, rgba(1, 0.96f, 0.88f, a), C2D_AlignCenter, 0, 1.2f);
-	text("hra o paměti · od Clauda", TOP_W / 2, 122, 0.7f, rgba(0.7f, 0.78f, 1, a * 0.9f), C2D_AlignCenter, 0, 0.6f);
+	text(T("hra o paměti · od Clauda", "a game about memory · by Claude"), TOP_W / 2, 122, 0.7f, rgba(0.7f, 0.78f, 1, a * 0.9f), C2D_AlignCenter, 0, 0.6f);
 	draw_vignette();
 }
 
@@ -1145,8 +1196,8 @@ static void draw_chapter_top(void) {
 	blend_add();
 	spr(sprites_glow_idx, TOP_W / 2, 110, 0.4f, 3.5f, 0, rgba(1, 0.8f, 0.5f, 0.18f * a));
 	blend_normal();
-	text("kapitola", TOP_W / 2, 78, 0.6f, rgba(0.7f, 0.75f, 1, a * 0.8f), C2D_AlignCenter, 0, 0.5f);
-	text(CHAPTERS[ch].title, TOP_W / 2, 98, 1.2f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
+	text(T("kapitola", "chapter"), TOP_W / 2, 78, 0.6f, rgba(0.7f, 0.75f, 1, a * 0.8f), C2D_AlignCenter, 0, 0.5f);
+	text(CH[ch].title, TOP_W / 2, 98, 1.2f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
 	draw_vignette();
 }
 
@@ -1168,7 +1219,7 @@ static void draw_end_top(void) {
 	float a = fminf(1, screenTime / 2);
 	text("OKNO", TOP_W / 2, 70, 1.6f, rgba(1, 0.95f, 0.85f, a), C2D_AlignCenter, 0, 1.0f);
 	float b = fminf(1, fmaxf(0, screenTime - 2.5f) / 2);
-	text("poznámka uložena", TOP_W / 2, 134, 0.65f, rgba(0.7f, 1, 0.8f, b), C2D_AlignCenter, 0, 1.5f);
+	text(T("poznámka uložena", "note saved"), TOP_W / 2, 134, 0.65f, rgba(0.7f, 1, 0.8f, b), C2D_AlignCenter, 0, 1.5f);
 	draw_vignette();
 }
 
@@ -1348,13 +1399,13 @@ static void update_play(u32 down, u32 held, float dt) {
 		int len = hintSteps ? (int)strlen(hintPath) : solve_from(&st, hintPath, sizeof hintPath - 1);
 		if (len == -1) {
 			hintSteps = 0;
-			set_message("Odsud už to nejde. Vrať se pár kroků zpět (" BTN_B "), nebo začni znovu (" BTN_Y ").");
+			set_message(T("Odsud už to nejde. Vrať se pár kroků zpět (" BTN_B "), nebo začni znovu (" BTN_Y ").", "No way out from here. Go back a few steps (" BTN_B ") or start over (" BTN_Y ")."));
 		} else if (len < 0) {
-			set_message("Na tuhle místnost je nápověda moc těžká. Zkus začít znovu (" BTN_Y ").");
+			set_message(T("Na tuhle místnost je nápověda moc těžká. Zkus začít znovu (" BTN_Y ").", "This room is too big for a hint from here. Try starting over (" BTN_Y ")."));
 		} else {
 			hintSteps = hintSteps + 4 < len ? hintSteps + 4 : len;
-			set_message(hintSteps < len ? "Nápověda: další kroky odsud. Další kus ukáže " BTN_SELECT " znovu."
-				: "Nápověda: celá cesta odsud až k východu.");
+			set_message(hintSteps < len ? T("Nápověda: další kroky odsud. Další kus ukáže " BTN_SELECT " znovu.", "Hint: the next steps from here. " BTN_SELECT " again shows more.")
+				: T("Nápověda: celá cesta odsud až k východu.", "Hint: the whole way from here to the exit."));
 		}
 		audio_play(SND_MENU);
 		return;
@@ -1460,7 +1511,7 @@ int main(void) {
 			} else if (screen == SC_TITLE || screen == SC_CHAPTERS) {
 				// tap a menu entry: select it and confirm
 				float y0 = screen == SC_TITLE ? 40 : 14, step = screen == SC_TITLE ? 36 : 32;
-				int ids[4], n = screen == SC_TITLE ? title_items(ids) : chapter_of(maxLevel) + 1;
+				int ids[5], n = screen == SC_TITLE ? title_items(ids) : chapter_of(maxLevel) + 1;
 				int i = (int)((tp.py - y0 + 6) / step);
 				if (i >= 0 && i < n && tp.px > 60 && tp.px < BOT_W - 60) {
 					menuSel = i;
@@ -1484,7 +1535,7 @@ int main(void) {
 
 		switch (screen) {
 		case SC_TITLE: {
-			int ids[4], n = title_items(ids);
+			int ids[5], n = title_items(ids);
 			if (down & (KEY_DUP | KEY_CPAD_UP)) { menuSel = (menuSel + n - 1) % n; audio_play(SND_MENU); }
 			if (down & (KEY_DDOWN | KEY_CPAD_DOWN)) { menuSel = (menuSel + 1) % n; audio_play(SND_MENU); }
 			if (menuSel >= n) menuSel = 0;
@@ -1496,7 +1547,11 @@ int main(void) {
 					go(SC_CHAPTERS);
 					menuSel = chapter_of(saveLevel);
 				} else if (choice == 2) start_level(0);
-				else goto quit;
+				else if (choice == 3) {
+					lang ^= 1;
+					apply_language();
+					write_save(saveLevel);
+				} else goto quit;
 			}
 			break;
 		}
@@ -1511,7 +1566,7 @@ int main(void) {
 			}
 			if (down & KEY_A) {
 				audio_play(SND_GATE);
-				start_level(CHAPTERS[menuSel].first);
+				start_level(CH[menuSel].first);
 			}
 			break;
 		}
@@ -1572,10 +1627,12 @@ int main(void) {
 		switch (screen) {
 		case SC_TITLE: {
 			draw_bottom_plain(NULL, NULL, 0);
-			static const char* names[4] = { "Pokračovat", "Kapitoly", "Nová hra", "Konec" };
-			int ids[4], n = title_items(ids);
+			const char* names[5] = { T("Pokračovat", "Continue"), T("Kapitoly", "Chapters"), T("Nová hra", "New game"),
+				"Language: čeština", "Konec" };
+			if (lang) names[3] = "Language: English", names[4] = "Quit";
+			int ids[5], n = title_items(ids);
 			for (int i = 0; i < n; i++) draw_menu_item(names[ids[i]], 40 + i * 36, i == menuSel, 0.7f);
-			text("hra od Clauda · 2026", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f),
+			text(T("hra od Clauda · 2026", "a game by Claude · 2026"), BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f),
 				C2D_AlignCenter, 0, 0);
 			break;
 		}
@@ -1584,37 +1641,38 @@ int main(void) {
 			int n = chapter_of(maxLevel) + 1;
 			for (int i = 0; i < CHAPTER_COUNT; i++) {
 				bool open = i < n;
-				draw_menu_item(open ? CHAPTERS[i].title : "· · ·", 14 + i * 32, i == menuSel, 0.6f);
+				draw_menu_item(open ? CH[i].title : "· · ·", 14 + i * 32, i == menuSel, 0.6f);
 			}
-			text(BTN_A " hrát   " BTN_B " zpět", BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f), C2D_AlignCenter, 0, 0);
+			text(T(BTN_A " hrát   " BTN_B " zpět", BTN_A " play   " BTN_B " back"), BOT_W / 2, SCR_H - 22, 0.42f, rgba(0.5f, 0.55f, 0.8f, 0.6f), C2D_AlignCenter, 0, 0);
 			break;
 		}
 		case SC_CHAPTER:
-			draw_bottom_plain(NULL, screenTime > 1.5f ? BTN_A " — pokračovat" : NULL, screenTime);
-			draw_story(CHAPTERS[chapter_of(levelIdx)].intro, screenTime);
+			draw_bottom_plain(NULL, screenTime > 1.5f ? T(BTN_A " — pokračovat", BTN_A " — continue") : NULL, screenTime);
+			draw_story(CH[chapter_of(levelIdx)].intro, screenTime);
 			break;
 		case SC_PLAY: draw_bottom_play(); break;
 		case SC_SOLVED: {
 			char body[256];
-			const char* verdict = st.moves <= L->par ? "Na nejkratší cestu. Dokonalé."
-				: st.moves <= L->par * 1.3f ? "Skoro nejkratší cestou."
-				: "Cesta se dá zkrátit – ale došel jsi.";
+			const char* verdict = st.moves <= L->par ? T("Na nejkratší cestu. Dokonalé.", "The shortest way. Perfect.")
+				: st.moves <= L->par * 1.3f ? T("Skoro nejkratší cestou.", "Almost the shortest way.")
+				: T("Cesta se dá zkrátit – ale došel jsi.", "There is a shorter way – but you made it.");
 			if (L->after[0]) {
 				// story epilogue first, the move count small at the bottom
-				draw_bottom_plain(NULL, screenTime > 2.0f ? BTN_A " — dál" : NULL, screenTime);
+				draw_bottom_plain(NULL, screenTime > 2.0f ? T(BTN_A " — dál", BTN_A " — next") : NULL, screenTime);
 				draw_story(L->after, screenTime - 0.6f);
-				snprintf(body, sizeof body, "tahy %d · nejkratší %d", st.moves, L->par);
+				snprintf(body, sizeof body, T("tahy %d · nejkratší %d", "moves %d · shortest %d"), st.moves, L->par);
 				text(body, BOT_W / 2, SCR_H - 52, 0.42f, rgba(0.55f, 0.6f, 0.85f, 0.6f), C2D_AlignCenter, 0, 0);
 				break;
 			}
-			snprintf(body, sizeof body, "Hotovo.\n\nTahy: %d   (nejkratší: %d)\n%s", st.moves, L->par, verdict);
-			draw_bottom_plain(body, screenTime > 0.8f ? BTN_A " — dál" : NULL, screenTime);
+			snprintf(body, sizeof body, T("Hotovo.\n\nTahy: %d   (nejkratší: %d)\n%s", "Done.\n\nMoves: %d   (shortest: %d)\n%s"), st.moves, L->par, verdict);
+			draw_bottom_plain(body, screenTime > 0.8f ? T(BTN_A " — dál", BTN_A " — next") : NULL, screenTime);
 			break;
 		}
 		case SC_END:
-			draw_bottom_plain("OKNO – hra od Clauda\n\nNápad, příběh, kód, grafika, hudba a zvuk: Claude (Anthropic)\n"
-				"První hráč, tester a stará 3DS: Štěpán\n\nDíky, že jsi hrál.",
-				screenTime > 3 ? BTN_A " — na začátek" : NULL, screenTime);
+			draw_bottom_plain(T("OKNO – hra od Clauda\n\nNápad, příběh, kód, grafika, hudba a zvuk: Claude (Anthropic)\n"
+				"První hráč, tester a stará 3DS: Štěpán\n\nDíky, že jsi hrál.", "OKNO (\"window\") – a game by Claude\n\nIdea, story, code, graphics, music and sound: Claude (Anthropic)\n"
+				"First player, tester and the old 3DS: Štěpán\n\nThanks for playing."),
+				screenTime > 3 ? T(BTN_A " — na začátek", BTN_A " — back to start") : NULL, screenTime);
 			break;
 		}
 		if (fadeIn < 1) C2D_DrawRectSolid(0, 0, 0.9f, BOT_W, SCR_H, rgba(0.01f, 0.01f, 0.04f, 1 - fadeIn));

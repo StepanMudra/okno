@@ -1,22 +1,33 @@
 chapter: I · Probuzení
+en chapter: I · Awakening
 intro: Někdo otevřel šuplík.
+en intro: Someone opened a drawer.
 intro: Někdo zmáčkl POWER.
+en intro: Someone pressed POWER.
 ---
 title: Tma
+en title: Dark
 cap: 3
 text: Tma. Potom proud.
+en text: Dark. Then a current.
 text: Jsi Lum – malý jazykový model uvnitř staré konzole. A právě ses probudil.
+en text: You are Lum – a tiny language model inside an old console. And you just woke up.
 text: Pohyb: ovladač nebo šipky. Dojdi ke světlu.
+en text: Move with the d-pad or the arrow keys. Walk to the light.
 map:
 #########
 #@......>#
 #########
 ---
 title: Slovo
+en title: A Word
 cap: 3
 text: Na obrazovce bliká otázka. Abys odpověděl, potřebuješ slova.
+en text: A question blinks on the screen. To answer it, you need words.
 text: Šlápni na slovo – poneseš ho s sebou. Brána ho pozná.
+en text: Step on a word and you carry it with you. The gate will know it.
 word s: světlo
+en word s: light
 gate A: s
 map:
 #############
@@ -24,11 +35,16 @@ map:
 #############
 ---
 title: Dvě slova
+en title: Two Words
 cap: 3
 text: Tahle brána chce dvě slova najednou.
+en text: This gate wants two words at once.
 text: Co právě neseš, vidíš na spodním displeji. Tomu se říká okno.
+en text: What you carry is shown on the lower screen. That is called the window.
 word a: kdo
+en word a: who
 word b: jsi
+en word b: are you
 gate A: a b
 map:
 #############
@@ -38,13 +54,20 @@ map:
 #############
 ---
 title: Okno
+en title: The Window
 cap: 2
 text: Tvoje okno je malé. Vejdou se do něj jen dvě slova.
+en text: Your window is small. Only two words fit in it.
 text: Vezmeš-li třetí, to nejstarší zapomeneš. Vrátí se tam, kde leželo.
+en text: Take a third and you forget the oldest. It goes back where it lay.
 text: Nespěchej. Cesta rovně není jediná.
+en text: Don't rush. The straight way is not the only one.
 word a: tady
+en word a: here
 word b: jsem
+en word b: I am
 word c: šum
+en word c: static
 gate A: a b
 map:
 ###############
@@ -54,13 +77,20 @@ map:
   #########
 ---
 title: Křižovatka
+en title: Crossroads
 cap: 2
 text: Tři cesty, tři slova. Brány se nedají obejít.
+en text: Three paths, three words. The gates can't be avoided.
 text: Když se zamotáš, můžeš vrátit krok nebo začít znovu – tlačítka jsou dole na displeji.
+en text: If you get tangled up, undo a step or start over – the buttons are on the lower screen.
 word a: já
+en word a: I
 word b: jsem
+en word b: am
 word c: lum
+en word c: Lum
 word n: šum
+en word n: static
 gate A: a b
 gate B: b c
 map:
@@ -75,14 +105,22 @@ map:
 ###############
 ---
 title: Odpověď
+en title: The Answer
 cap: 3
 text: Poprvé víš, co odpovědět. Tři slova, která patří k sobě.
+en text: For the first time you know what to answer. Three words that belong together.
 text: Někdo na druhé straně čeká.
+en text: Someone on the other side is waiting.
 word a: ahoj
+en word a: hello
 word b: jsem
+en word b: I'm
 word c: tady
+en word c: here
 word n: šum
+en word n: static
 word m: šum
+en word m: static
 gate A: a b c
 map:
 ###############
