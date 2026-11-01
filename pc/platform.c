@@ -24,6 +24,7 @@ static float ox, oy;  // origin of the screen being drawn
 static C3D_RenderTarget targets[2] = { { GFX_TOP }, { GFX_BOTTOM } };
 static u32 held, prevHeld;
 static SDL_GameController* pad;
+static u16 touchX, touchY;
 
 static SDL_Color col(u32 c) { return (SDL_Color){ c & 255, (c >> 8) & 255, (c >> 16) & 255, c >> 24 }; }
 
@@ -86,6 +87,17 @@ void hidScanInput(void) {
 	if (k[SDL_SCANCODE_ESCAPE]) h |= KEY_START;
 	if (k[SDL_SCANCODE_Q]) h |= KEY_L;
 	if (k[SDL_SCANCODE_E]) h |= KEY_R;
+	// the mouse on the lower screen acts as the touch screen
+	int mx, my;
+	float lx, ly;
+	if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+		SDL_RenderWindowToLogical(ren, mx, my, &lx, &ly);
+		if (lx >= 40 && lx < 360 && ly >= 240 && ly < 480) {
+			h |= KEY_TOUCH;
+			touchX = (u16)(lx - 40);
+			touchY = (u16)(ly - 240);
+		}
+	}
 	if (pad) {
 		static const struct { SDL_GameControllerButton b; u32 key; } map[] = {
 			{ SDL_CONTROLLER_BUTTON_A, KEY_A }, { SDL_CONTROLLER_BUTTON_B, KEY_B },
@@ -104,6 +116,11 @@ void hidScanInput(void) {
 
 u32 hidKeysDown(void) { return held & ~prevHeld; }
 u32 hidKeysHeld(void) { return held; }
+
+void hidTouchRead(touchPosition* pos) {
+	pos->px = touchX;
+	pos->py = touchY;
+}
 
 void hidCircleRead(circlePosition* pos) {
 	pos->dx = pos->dy = 0;
