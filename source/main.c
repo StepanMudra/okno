@@ -961,6 +961,30 @@ static void draw_typed(const char* s, float x, float y, float scale, u32 color, 
 	text(buf, x, y, scale, color, 0, wrap, 0);
 }
 
+// Touch buttons along the bottom of the lower screen (mouse on PC).
+typedef struct { float x, y, w, h; const char* label; u32 key; } TouchButton;
+static const TouchButton TOUCH_BUTTONS[3] = {
+	{ 70, 212, 76, 22, "zpět", KEY_B },
+	{ 152, 212, 76, 22, "znovu", KEY_Y },
+	{ 234, 212, 76, 22, "rada", KEY_SELECT },
+};
+static int touchFlash = -1;
+static float touchFlashTime;
+
+static u32 touch_buttons(u32 down, int tx, int ty) {
+	for (int i = 0; i < 3; i++) {
+		const TouchButton* b = &TOUCH_BUTTONS[i];
+		if (tx >= b->x && tx < b->x + b->w && ty >= b->y - 4 && ty < b->y + b->h + 4) {
+			touchFlash = i;
+			touchFlashTime = 0.25f;
+			return down | b->key;
+		}
+	}
+	return down;
+}
+
+static void round_rect(float x, float y, float w, float h, float r, u32 c);
+
 static void draw_bottom_play(void) {
 	C2D_DrawRectangle(0, 0, 0, BOT_W, SCR_H, rgba(0.05f, 0.06f, 0.12f, 1), rgba(0.05f, 0.06f, 0.12f, 1),
 		rgba(0.02f, 0.02f, 0.05f, 1), rgba(0.02f, 0.02f, 0.05f, 1));
@@ -1014,7 +1038,7 @@ static void draw_bottom_play(void) {
 	for (int y = 0; y < GH && !usesHeat; y++)
 		usesHeat = strchr(L->map[y], '^') || strchr(L->map[y], '~');
 	if (usesHeat)
-		text(st.hot ? "teplota: vysoká – vidíš i to, co není" : "teplota: nízká", BOT_W - 12, SCR_H - 36, 0.42f,
+		text(st.hot ? "teplota: vysoká – vidíš i to, co není" : "teplota: nízká", BOT_W - 12, SCR_H - 46, 0.42f,
 			st.hot ? rgba(1, 0.6f, 0.35f, 0.9f) : rgba(0.5f, 0.8f, 1, 0.8f), C2D_AlignRight, 0, 0);
 	C2D_DrawRectSolid(12, ty - 6, 0.5f, BOT_W - 24, 1, rgba(0.4f, 0.45f, 0.8f, 0.25f));
 	if (messageTime > 0) {
@@ -1024,10 +1048,17 @@ static void draw_bottom_play(void) {
 	}
 
 	char foot[96];
-	snprintf(foot, sizeof foot, "tahy %d", st.moves);
-	text(foot, 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f), 0, 0, 0);
-	text(BTN_B " zpět  " BTN_Y " znovu  " BTN_SELECT " rada", BOT_W - 12, SCR_H - 20, 0.45f, rgba(0.6f, 0.62f, 0.8f, 0.8f),
-		C2D_AlignRight, 0, 0);
+	snprintf(foot, sizeof foot, "tahy\n%d", st.moves);
+	text(foot, 14, SCR_H - 31, 0.42f, rgba(0.6f, 0.62f, 0.8f, 0.8f), 0, 0, 0);
+	static const char* keys[3] = { BTN_B, BTN_Y, BTN_SELECT };
+	for (int i = 0; i < 3; i++) {
+		const TouchButton* b = &TOUCH_BUTTONS[i];
+		float f = (touchFlash == i && touchFlashTime > 0) ? touchFlashTime * 3 : 0;
+		round_rect(b->x, b->y, b->w, b->h, 8, rgba(0.25f + 0.5f * f, 0.27f + 0.4f * f, 0.5f + 0.2f * f, 0.55f + 0.3f * f));
+		char label[32];
+		snprintf(label, sizeof label, "%s  %s", b->label, keys[i]);
+		text(label, b->x + b->w / 2, b->y + 4, 0.42f, rgba(0.85f, 0.88f, 1, 0.9f), C2D_AlignCenter, 0, 0);
+	}
 }
 
 static void round_rect(float x, float y, float w, float h, float r, u32 c) {
@@ -1253,6 +1284,7 @@ static float repeatTimer;
 
 static void update_play(u32 down, u32 held, float dt) {
 	roomTime += dt;
+	if (touchFlashTime > 0) touchFlashTime -= dt;
 	if (messageTime > 0) messageTime -= dt;
 	if (shake > 0) shake -= dt;
 	if (bumpGate > 0) bumpGate -= dt;
@@ -1411,6 +1443,24 @@ int main(void) {
 		hidScanInput();
 		u32 down = hidKeysDown(), held = hidKeysHeld();
 		script_input(&down, &held);
+		if (down & KEY_TOUCH) {
+			touchPosition tp;
+			hidTouchRead(&tp);
+			if (screen == SC_PLAY) {
+				down = touch_buttons(down, tp.px, tp.py);
+			} else if (screen == SC_TITLE || screen == SC_CHAPTERS) {
+				// tap a menu entry: select it and confirm
+				float y0 = screen == SC_TITLE ? 40 : 14, step = screen == SC_TITLE ? 36 : 32;
+				int ids[4], n = screen == SC_TITLE ? title_items(ids) : chapter_of(maxLevel) + 1;
+				int i = (int)((tp.py - y0 + 6) / step);
+				if (i >= 0 && i < n && tp.px > 60 && tp.px < BOT_W - 60) {
+					menuSel = i;
+					down |= KEY_A;
+				}
+			} else {
+				down |= KEY_A;  // chapter card, solved room, the end: tap to continue
+			}
+		}
 		// circle pad acts like the d-pad
 		circlePosition cp;
 		hidCircleRead(&cp);
