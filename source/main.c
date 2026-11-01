@@ -1050,13 +1050,19 @@ static void draw_bottom_play(void) {
 }
 
 static void round_rect(float x, float y, float w, float h, float r, u32 c) {
-	C2D_DrawRectSolid(x + r, y, 0.5f, w - 2 * r, h, c);
-	C2D_DrawRectSolid(x, y + r, 0.5f, r, h - 2 * r, c);
-	C2D_DrawRectSolid(x + w - r, y + r, 0.5f, r, h - 2 * r, c);
-	C2D_DrawCircleSolid(x + r, y + r, 0.5f, r, c);
-	C2D_DrawCircleSolid(x + w - r, y + r, 0.5f, r, c);
-	C2D_DrawCircleSolid(x + r, y + h - r, 0.5f, r, c);
-	C2D_DrawCircleSolid(x + w - r, y + h - r, 0.5f, r, c);
+	// pieces never overlap, so translucent colours stay even
+	C2D_DrawRectSolid(x + r, y, 0.5f, w - 2 * r, r, c);
+	C2D_DrawRectSolid(x, y + r, 0.5f, w, h - 2 * r, c);
+	C2D_DrawRectSolid(x + r, y + h - r, 0.5f, w - 2 * r, r, c);
+	const float cx[4] = { x + r, x + w - r, x + w - r, x + r }, cy[4] = { y + r, y + r, y + h - r, y + h - r };
+	for (int k = 0; k < 4; k++) {
+		float a0 = M_PI + k * M_PI / 2;  // corners clockwise from top-left
+		for (int i = 0; i < 6; i++) {
+			float a = a0 + i * M_PI / 12, b = a0 + (i + 1) * M_PI / 12;
+			C2D_DrawTriangle(cx[k], cy[k], c, cx[k] + cosf(a) * r, cy[k] + sinf(a) * r, c, cx[k] + cosf(b) * r,
+				cy[k] + sinf(b) * r, c, 0.5f);
+		}
+	}
 }
 
 // Chapter card: narrator lines are typed, lines starting with "Ema:" arrive as chat bubbles.
