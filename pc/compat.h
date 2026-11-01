@@ -129,3 +129,6 @@ static const size_t font_bcfnt_size = 0;
 
 // test screenshots of the PC window (P in the autopilot script), written when the frame is presented
 void pc_save_screenshot(const char* path);
+
+// system UI language: Czech or Slovak -> the game starts in Czech
+int pc_system_lang_czech(void);

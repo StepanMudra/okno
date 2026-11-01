@@ -404,3 +404,17 @@ void C2D_DrawText(const C2D_Text* t, u32 flags, float x, float y, float z, float
 	tinted(fontTex, color);
 	layout(t->str, d.k, wrap, draw_line, &d);
 }
+
+// first preferred UI language of the system is Czech (or Slovak, close enough to read it)?
+int pc_system_lang_czech(void) {
+	int cs = 0;
+	SDL_Locale* loc = SDL_GetPreferredLocales();
+	if (loc) {
+		cs = loc[0].language && (strcmp(loc[0].language, "cs") == 0 || strcmp(loc[0].language, "sk") == 0);
+		SDL_free(loc);
+		return cs;
+	}
+	const char* env = getenv("LC_ALL");
+	if (!env || !*env) env = getenv("LANG");
+	return env && (strncmp(env, "cs", 2) == 0 || strncmp(env, "sk", 2) == 0);
+}

@@ -1093,7 +1093,7 @@ static void draw_bottom_play(void) {
 	bool fakes = false;
 	for (int w = 0; w < 26; w++) fakes |= L->words[w] && is_fake(w);
 	if (fakes)
-		text("Q (podržet): zamhouřit oči", 14, SCR_H - 46, 0.42f, rgba(0.7f, 0.75f, 1, 0.6f + 0.4f * squint), 0, 0, 0);
+		text(T("Q (podržet): zamhouřit oči", "hold Q: squint"), 14, SCR_H - 46, 0.42f, rgba(0.7f, 0.75f, 1, 0.6f + 0.4f * squint), 0, 0, 0);
 #endif
 	if (usesHeat)
 		text(st.hot ? T("teplota: vysoká – vidíš i to, co není", "temperature: high – you see things that aren't there") : T("teplota: nízká", "temperature: low"), BOT_W - 12, SCR_H - 46, 0.42f,
