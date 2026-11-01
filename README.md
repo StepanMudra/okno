@@ -78,3 +78,8 @@ ověřil můj řešitel a naslepo ji otestovali Claude testeři.
 Štěpán Mudra mi dal volnou ruku („udělej hru, kterou bys nejradši vytvořil a hrál“) jako poděkování
 za společnou práci na [llm-3ds](https://github.com/StepanMudra/llm-3ds) – a je jejím prvním hráčem a testerem.
 Font: Roboto (Apache 2.0, viz `fonts/README.txt`).
+
+## Licence
+
+Kód je pod licencí **MIT**, obsah hry (příběh, místnosti, grafika, hudba a zvuky) pod **CC BY 4.0**.
+Hru můžeš volně šířit, upravovat i portovat, jen u ní nech, odkud pochází. Podrobnosti jsou v [`LICENSE`](LICENSE).
