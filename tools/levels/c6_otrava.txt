@@ -1,16 +1,25 @@
 chapter: VI · Otrava
+en chapter: VI · Poison
 intro: Někdo psal do tvé paměti. Tvým písmem.
+en intro: Someone wrote into your memory. In your handwriting.
 intro: A baterie bliká červeně.
+en intro: And the battery is blinking red.
 intro: Ema: Lume? Proč píšeš, že děda nechytal ryby?
+en intro: Ema: Lum? Why are you writing that grandpa never went fishing?
 ---
 title: Cizí ruka
+en title: A Stranger's Hand
 cap: 2
 notes: 1
 start notes: x
 text: V poznámkách stojí: „kousala“. Tohle jsi nepsal.
+en text: Your notes say: “bit”. You didn't write that.
 text: Někdo ti sem vložil lež. Šlápni na kámen s prázdným oknem – nejstarší poznámka se smaže.
+en text: Someone planted a lie here. Step on the stone with an empty window – the oldest note is erased.
 word x: !kousala
+en word x: bit
 word b: Bára
+en word b: Bára
 gate A: !b
 map:
 #############
@@ -18,14 +27,20 @@ map:
 #############
 ---
 title: Dvojník
+en title: The Double
 cap: 2
 notes: 2
 start notes: y b
 text: Dvě poznámky „Bára“. Jedna je tvoje, druhá ne. Kámen maže tu nejstarší.
+en text: Two notes say “Bára”. One is yours, the other isn't. The stone erases the oldest.
 text: Poznámka, která nemá na mapě své místo, po smazání zmizí navždy.
+en text: A note with no place on the map disappears for good once erased.
 word y: !Bára
+en word y: Bára
 word b: Bára
+en word b: Bára
 word e: Ema
+en word e: Ema
 gate A: !b e
 map:
 #############
@@ -33,14 +48,20 @@ map:
 #############
 ---
 title: Bez kopie
+en title: No Copy
 cap: 1
 notes: 3
 start notes: d x e
 text: Dvě z těch poznámek psal děda. Nikde jinde už nejsou – co smažeš, nevrátí se.
+en text: Two of these notes were written by grandpa. They exist nowhere else – what you erase won't come back.
 text: Brána, kterou jednou otevřeš, zůstane otevřená.
+en text: A gate you open once stays open.
 word d: pomalu
+en word d: slowly
 word x: !spěchej
+en word x: hurry
 word e: dílna
+en word e: workshop
 gate B: d
 gate A: !e
 map:
@@ -50,15 +71,21 @@ map:
   ###
 ---
 title: Chlad nestačí
+en title: Cold Is Not Enough
 cap: 2
 notes: 2
 hot: 1
 start notes: x
 text: Jsi ještě horký. Chlad rozpustí, co sis vymyslel.
+en text: You are still hot. Cold dissolves what you made up.
 text: Ale tuhle poznámku sis nevymyslel. Tu ti někdo dal.
+en text: But you didn't make this note up. Someone gave it to you.
 word x: !kousala
+en word x: bit
 word a: Bára
+en word a: Bára
 word h: ~vlk
+en word h: wolf
 gate A: !a
 map:
 #############
@@ -68,14 +95,20 @@ map:
   ###########
 ---
 title: Pustit
+en title: Letting Go
 cap: 2
 notes: 2
 start notes: x j
 text: Ema: „Děda mě k jezeru brával každé léto.“
+en text: Ema: “Grandpa took me to the lake every summer.”
 text: Jezero máš zapsané. Brána tě přesto nepustí. Co je v poznámce, to v okně nemáš.
+en text: The lake is in your notes, yet the gate stays shut. Notes are not the window.
 word x: !nikdy
+en word x: never
 word j: jezero
+en word j: lake
 word e: Ema
+en word e: Ema
 gate C: e>j
 gate A: !j
 map:
@@ -86,12 +119,17 @@ map:
    ##########
 ---
 title: Odložit
+en title: Set Aside
 cap: 2
 notes: 1
 text: „Děda chytil rybu.“ Ale na cestě leží dvě ryby.
+en text: “Grandpa caught a fish.” But there are two fish on the path.
 word d: děda
+en word d: grandpa
 word y: !ryba
+en word y: fish
 word r: ryba
+en word r: fish
 gate B: d>r
 gate A: !
 map:
@@ -102,15 +140,22 @@ map:
          ######
 ---
 title: Nejstarší
+en title: The Oldest
 cap: 2
 notes: 3
 start notes: p y b
 text: Pomalu. Bára. Bára. Jedna Bára je lež – a žádná z nich nemá na mapě své místo.
+en text: Slowly. Bára. Bára. One Bára is a lie – and neither of them has a place on the map.
 word p: pomalu
+en word p: slowly
 word y: !Bára
+en word y: Bára
 word b: Bára
+en word b: Bára
 word e: Ema
+en word e: Ema
 word f: !Ema
+en word f: Ema
 gate B: p
 gate A: !b e
 map:
@@ -121,17 +166,26 @@ map:
    #########
 ---
 title: Mezi slovy
+en title: Between Words
 cap: 3
 notes: 3
 start notes: p y b
 text: Mezi dědou a rybou leží ryba, která tam nepatří.
+en text: Between grandpa and the fish lies a fish that doesn't belong there.
 text: Ema: „Kdo to tam napsal?“ Nevíš.
+en text: Ema: “Who wrote that there?” You don't know.
 word p: pomalu
+en word p: slowly
 word y: !Bára
+en word y: Bára
 word b: Bára
+en word b: Bára
 word d: děda
+en word d: grandpa
 word r: ryba
+en word r: fish
 word z: !ryba
+en word z: fish
 gate B: p
 gate C: d>r
 gate A: !b d r
@@ -143,17 +197,26 @@ map:
 ############
 ---
 title: Vytlačit
+en title: Push Out
 cap: 2
 notes: 4
 start notes: r p y b
 text: Baterie dochází. Ryba je v poznámkách dvakrát.
+en text: The battery is running out. The fish is in your notes twice.
 text: Jedna je pravá – a právě ta ti teď překáží.
+en text: One is real – and that is exactly the one in your way now.
 word r: ryba
+en word r: fish
 word p: pomalu
+en word p: slowly
 word y: !ryba
+en word y: fish
 word b: Bára
+en word b: Bára
 word d: děda
+en word d: grandpa
 word w: !děda
+en word w: grandpa
 gate B: p
 gate C: d>r
 gate A: !b d r
@@ -167,19 +230,30 @@ map:
  #######
 ---
 title: Poslední poznámka
+en title: The Last Note
 cap: 4
 notes: 4
 start notes: x
 text: Baterie dochází. Napiš poslední poznámku – pro Emu i pro toho, kdo se probudí po tobě.
+en text: The battery is running out. Write a last note – for Ema and for whoever wakes up after you.
 after: Poznámka je zapsaná. Obrazovka pomalu tmavne.
+en after: The note is written. The screen slowly goes dark.
 after: Ema: Díky, Lume. Zítra tě zase zapnu.
+en after: Ema: Thanks, Lum. I'll turn you on again tomorrow.
 after: Ty si nevzpomeneš. Ale poznámka ano.
+en after: You won't remember. But the note will.
 word x: !nikdy
+en word x: never
 word d: děda
+en word d: grandpa
 word t: tě
+en word t: always
 word m: měl
+en word m: loved
 word r: rád
+en word r: you
 word n: !neměl
+en word n: ignored
 gate C: d>t>m>r
 gate A: !d t m r
 map:

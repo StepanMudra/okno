@@ -39,6 +39,9 @@ Chapter file format (one file per chapter, rooms separated by a line '---'):
   #@....a.......>#
   ################
 
+  English: the same keys prefixed with "en " (en chapter, en intro, en title, en text, en after,
+  en word a). The fake prefix (! or ~) is taken from the Czech word. Missing lines fall back to Czech.
+
 Usage: python3 tools/build_levels.py [--verbose] [--only FILE]
 """
 import sys
@@ -65,16 +68,18 @@ class Room:
         self.words = {}
         self.gates = {}
         self.rows = []
+        self.en = {"title": "", "text": [], "after": [], "words": {}}
 
 
 def parse_chapter(path):
     blocks = path.read_text(encoding="utf-8").split("\n---\n")
-    head = {"chapter": "", "intro": []}
+    head = {"chapter": "", "intro": [], "en chapter": "", "en intro": []}
     for line in blocks[0].splitlines():
-        if line.startswith("chapter:"):
-            head["chapter"] = line.split(":", 1)[1].strip()
-        elif line.startswith("intro:"):
-            head["intro"].append(line.split(":", 1)[1].strip())
+        key, _, val = line.partition(":")
+        if key in ("chapter", "en chapter"):
+            head[key] = val.strip()
+        elif key in ("intro", "en intro"):
+            head[key].append(val.strip())
     rooms = []
     for i, block in enumerate(blocks[1:], 1):
         r = Room(head["chapter"], f"{path.name}#{i}")
@@ -88,7 +93,17 @@ def parse_chapter(path):
                 continue
             key, _, val = line.partition(":")
             val = val.strip()
-            if key == "title":
+            if key.startswith("en "):
+                k = key[3:]
+                if k == "title":
+                    r.en["title"] = val
+                elif k in ("text", "after"):
+                    r.en[k].append(val)
+                elif k.startswith("word "):
+                    r.en["words"][k[5:].strip()] = val
+                else:
+                    raise SystemExit(f"{r.src}: unknown line {line!r}")
+            elif key == "title":
                 r.title = val
             elif key == "cap":
                 r.cap = int(val)
@@ -268,6 +283,50 @@ def c_str(s):
     return '"' + s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n") + '"'
 
 
+GLYPHS = {chr(int(c)) for c in (ROOT / "fonts" / "whitelist.txt").read_text().split()} | {"\n"}
+
+
+def english(chapters, rooms):
+    """English text tables (LEVELS_EN, CHAPTERS_EN). Missing translations fall back to Czech."""
+    missing = []
+
+    def en(cs, tr, what):
+        if cs and not tr:
+            missing.append(what)
+            return cs
+        bad = set(tr) - GLYPHS
+        if bad:
+            raise SystemExit(f"{what}: no glyph for {''.join(sorted(bad))!r}")
+        return tr
+
+    out = ["", "static const ChapterText CHAPTERS_EN[CHAPTER_COUNT] = {"]
+    for head, _, _ in chapters:
+        name = head["chapter"]
+        out.append(f"  {{ {c_str(en(name, head['en chapter'], name))}, "
+                   f"{c_str(en(chr(10).join(head['intro']), chr(10).join(head['en intro']), name + ' intro'))} }},")
+    out.append("};")
+    out.append("")
+    out.append("static const LevelText LEVELS_EN[LEVEL_COUNT] = {")
+    for r in rooms:
+        words = []
+        for k, v in sorted(r.words.items()):
+            prefix = v[0] if v[0] in "!~" else ""
+            tr = r.en["words"].get(k, "")
+            if tr[:1] in ("!", "~"):
+                raise SystemExit(f"{r.src}: en word {k} must not repeat the fake prefix (it is taken from the Czech word)")
+            words.append(f"[{ord(k) - 97}] = {c_str(prefix + en(v[len(prefix):], tr, f'{r.src} word {k}'))}")
+        out.append("  {")
+        out.append(f"    .title = {c_str(en(r.title, r.en['title'], r.src + ' title'))},")
+        out.append(f"    .text = {c_str(en(chr(10).join(r.text), chr(10).join(r.en['text']), r.src + ' text'))},")
+        out.append(f"    .after = {c_str(en(chr(10).join(r.after), chr(10).join(r.en['after']), r.src + ' after'))},")
+        out.append(f"    .words = {{ {', '.join(words)} }},")
+        out.append("  },")
+    out.append("};")
+    if missing:
+        print(f"⚠ {len(missing)} English texts missing (Czech used): {', '.join(missing[:6])}{' …' if len(missing) > 6 else ''}")
+    return out
+
+
 def main():
     verbose = "--verbose" in sys.argv
     only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
@@ -320,6 +379,7 @@ def main():
         out.append("    },")
         out.append("  },")
     out.append("};")
+    out.extend(english(chapters, rooms))
     (ROOT / "source" / "levels_data.h").write_text("\n".join(out) + "\n", encoding="utf-8")
     sols = ROOT / "tools" / "solutions.txt"
     sols.write_text("".join(f"{i} {r.solution}\n" for i, r in enumerate(rooms)))

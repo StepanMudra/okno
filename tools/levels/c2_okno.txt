@@ -1,13 +1,21 @@
 chapter: II · Okno
+en chapter: II · Window
 intro: Ema napsala další otázku.
+en intro: Ema typed another question.
 intro: Ema: Znal jsi dědu?
+en intro: Ema: Did you know grandpa?
 ---
 title: Otázka
+en title: The Question
 cap: 2
 text: Znal jsi dědu? Nevíš. Ale v paměti po něm něco zůstalo.
+en text: Did you know grandpa? You can't tell. But something of him remains.
 text: Studna zapomnění vymaže celé okno. Brána s prázdným kroužkem je brána ticha: projdeš jen s prázdným oknem.
+en text: A well wipes the whole window. A gate with an empty ring is a gate of silence: only an empty window passes.
 word n: šum
+en word n: static
 word d: děda
+en word d: grandpa
 gate A: -
 gate B: d
 map:
@@ -18,10 +26,14 @@ map:
    ###
 ---
 title: Napřed
+en title: Ahead
 cap: 3
 text: Brána, kterou jednou projdeš, zůstane otevřená. Pamatuje si to i za tebe.
+en text: A gate you pass once stays open. It remembers for you.
 word d: děda
+en word d: grandpa
 word e: Ema
+en word e: Ema
 gate A: -
 gate B: d e
 map:
@@ -32,12 +44,18 @@ map:
  ###
 ---
 title: Bára
+en title: Bára
 cap: 2
 text: Bára, dědova fena. Prý za ním chodila krok za krokem.
+en text: Bára, grandpa's dog. They say she followed him step by step.
 text: Slovo, které už neseš, podruhé nezvedneš.
+en text: A word you already carry can't be picked up twice.
 word d: děda
+en word d: grandpa
 word e: Ema
+en word e: Ema
 word b: Bára
+en word b: Bára
 gate A: d e
 map:
 ###########
@@ -47,12 +65,18 @@ map:
 ###########
 ---
 title: Studna
+en title: The Well
 cap: 2
 text: Dílna. Piliny, ponk, děda v zástěře. Jenže cesta k nim vede přes studnu.
+en text: The workshop. Sawdust, a workbench, grandpa in his apron. But the way there leads past a well.
 text: Zapomenout je tu snadné. Najdi, k čemu je dobré ticho.
+en text: Forgetting is easy here. Find out what silence is good for.
 word a: děda
+en word a: grandpa
 word b: dílna
+en word b: workshop
 word c: piliny
+en word c: sawdust
 gate S: -
 gate B: a c
 map:
@@ -63,12 +87,18 @@ map:
       ######
 ---
 title: Oklika
+en title: The Long Way
 cap: 2
 text: Ema: „Jaký byl?“ Děda by to věděl. Jenže mezi ním a odpovědí leží studna.
+en text: Ema: “What was he like?” Grandpa would know. But a well lies between him and the answer.
 text: Cesta zpátky se otevře jen Emě.
+en text: The way back opens only for Ema.
 word d: děda
+en word d: grandpa
 word e: Ema
+en word e: Ema
 word x: šum
+en word x: static
 gate T: e
 gate B: d e
 map:
@@ -80,13 +110,20 @@ map:
 ###########
 ---
 title: Brány
+en title: Gates
 cap: 2
 text: Chceš Emě říct všechno najednou. Tolik ale neuneseš.
+en text: You want to tell Ema everything at once. But you can't carry that much.
 text: Nemusíš nést všechno naráz.
+en text: You don't have to carry it all at once.
 word a: děda
+en word a: grandpa
 word b: dílna
+en word b: workshop
 word c: Ema
+en word c: Ema
 word d: jezero
+en word d: lake
 gate A: a b
 gate B: c d
 map:
@@ -97,14 +134,22 @@ map:
 #############
 ---
 title: Jezero
+en title: The Lake
 cap: 3
 text: Jezero. Děda tu s Emou chytal ryby a říkal jí: „Pomalu.“
+en text: The lake. Grandpa fished here with Ema and told her: “Slowly.”
 text: Šum leží přímo v cestě. Vezmi si ho dřív, než on vezme tebe.
+en text: Static lies right in the way. Take it before it takes you.
 word j: jezero
+en word j: lake
 word r: ryba
+en word r: fish
 word p: pomalu
+en word p: slowly
 word n: šum
+en word n: static
 word m: šum
+en word m: static
 gate G: j r p
 map:
 ##############
@@ -114,15 +159,24 @@ map:
 ################
 ---
 title: Výměna
+en title: Trade-off
 cap: 3
 text: Co uneseš do dílny, neuneseš k jezeru. Musíš vybírat.
+en text: What you carry to the workshop, you can't carry to the lake. You have to choose.
 text: Jen děda půjde s tebou celou cestu.
+en text: Only grandpa goes with you all the way.
 word a: dílna
+en word a: workshop
 word b: piliny
+en word b: sawdust
 word c: děda
+en word c: grandpa
 word d: jezero
+en word d: lake
 word e: ryba
+en word e: fish
 word n: šum
+en word n: static
 gate A: a b c
 gate B: c d e
 map:
@@ -133,14 +187,22 @@ map:
 ################
 ---
 title: Rybáři
+en title: Fishermen
 cap: 4
 text: Uložená hra. Dva rybáři: DĚDA a EMA. Hráli ji spolu každý večer.
+en text: A saved game. Two fishermen: GRANDPA and EMA. They played it together every evening.
 text: Do okna se teď vejdou čtyři slova. Jedno místo zbude.
+en text: Four words fit in the window now. One place is left over.
 word a: děda
+en word a: grandpa
 word b: Ema
+en word b: Ema
 word c: prut
+en word c: rod
 word n: šum
+en word n: static
 word m: šum
+en word m: static
 gate G: a b c
 map:
 ##############
@@ -150,14 +212,22 @@ map:
 ###############
 ---
 title: Odpověď
+en title: The Answer
 cap: 3
 text: Ema čeká. Kurzor bliká: „Znal jsi dědu?“
+en text: Ema is waiting. The cursor blinks: “Did you know grandpa?”
 text: Neznal. Ale za tečkou věta nekončí.
+en text: You didn't. But a sentence doesn't end at the full stop.
 word v: nevím
+en word v: no idea
 word a: ale
+en word a: but
 word n: najdu
+en word n: I'll find
 word h: ho
+en word h: him
 word b: Bára
+en word b: Bára
 gate N: v
 gate S: -
 gate H: a n h

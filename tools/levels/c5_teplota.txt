@@ -1,12 +1,19 @@
 chapter: V · Teplota
+en chapter: V · Temperature
 intro: Ema: Vyprávěj mi o dědovi. Nějaký příběh.
+en intro: Ema: Tell me about grandpa. A story.
 intro: Příběh se nedá jen najít. Musí se vymyslet.
+en intro: A story can't just be found. It has to be made up.
 ---
 title: Teplo
+en title: Warmth
 cap: 3
 text: K vymýšlení je potřeba teplo.
+en text: Making things up takes warmth.
 text: Oranžová deska tě rozpálí. Horký projdeš i mlhou.
+en text: The orange plate heats you up. While hot, you can walk through mist.
 word a: děda
+en word a: grandpa
 gate A: a
 map:
 ###############
@@ -14,11 +21,16 @@ map:
 ###############
 ---
 title: Přelud
+en title: Mirage
 cap: 3
 text: Horký vidíš víc. I slova, která nikdy nebyla – a vypadají jako pravá. Děda loď neměl.
+en text: Hot, you see more. Even words that never were – and they look real. Grandpa had no boat.
 text: Brána pravdy vymyšlené nepustí. Každá horečka jednou opadne.
+en text: The gate of truth lets nothing made up through. Every fever breaks.
 word a: dílna
+en word a: workshop
 word x: ~loď
+en word x: boat
 gate A: !a
 map:
 ################
@@ -27,14 +39,21 @@ map:
         ###
 ---
 title: Dva břehy
+en title: Two Shores
 cap: 2
 hot: 1
 text: Bára ráda plavala. Jezero má dva břehy.
+en text: Bára loved to swim. The lake has two shores.
 text: Jsi rozpálený a oranžová deska tu není. Co vychladne, už se neohřeje.
+en text: You are hot and there is no orange plate here. What cools down won't heat up again.
 word a: Bára
+en word a: Bára
 word b: jezero
+en word b: lake
 word x: ~vlk
+en word x: wolf
 word y: ~moře
+en word y: sea
 gate A: !a b
 map:
 #############
@@ -46,13 +65,20 @@ map:
 ########
 ---
 title: Zapomenout
+en title: To Forget
 cap: 2
 text: Ema píše: Děda umřel v zimě.
+en text: Ema types: Grandpa died in winter.
 text: Ta slova jsou těžká a brána chce ticho. Studna tu není. Jenom sny.
+en text: Those words are heavy and the gate wants silence. There is no well here. Only dreams.
 word a: zima
+en word a: winter
 word b: smutek
+en word b: sorrow
 word x: ~sníh
+en word x: snow
 word y: ~led
+en word y: ice
 gate A: -
 map:
 ##############
@@ -62,12 +88,18 @@ map:
 #########
 ---
 title: Dvě Báry
+en title: Two Báras
 cap: 2
 text: Nejdřív děda, potom Bára. Tak spolu chodili.
+en text: First grandpa, then Bára. That's how they walked together.
 text: Jenže Bára se tě drží. Kdo ji odežene?
+en text: But Bára clings to you. Who will chase her away?
 word a: děda
+en word a: grandpa
 word b: Bára
+en word b: Bára
 word y: ~Bára
+en word y: Bára
 gate A: !a>b
 map:
 #############
@@ -76,14 +108,21 @@ map:
         ###
 ---
 title: Místo
+en title: Room
 cap: 3
 notes: 1
 text: Ema píše: A jak mluvil?
+en text: Ema types: And how did he talk?
 text: Tři slova, tři místa v okně. A jeden sen, který se nechce dát vyhnat.
+en text: Three words, three places in the window. And one dream that won't be driven out.
 word a: děda
+en word a: grandpa
 word b: mluvil
+en word b: spoke
 word c: pomalu
+en word c: slowly
 word y: ~pomalu
+en word y: slowly
 gate A: !a>b>c
 map:
 #############
@@ -92,13 +131,19 @@ map:
 #############
 ---
 title: Zápis
+en title: The Note
 cap: 2
 notes: 1
 text: V dílně nebylo zlato. Jen piliny.
+en text: There was no gold in the workshop. Only sawdust.
 text: Zápis bere vždycky to nejnovější. Ne vždycky to pravé.
+en text: Writing a note always takes the newest word. Not always the true one.
 word a: dílna
+en word a: workshop
 word b: piliny
+en word b: sawdust
 word x: ~zlato
+en word x: gold
 gate A: !a b
 map:
 #############
@@ -106,13 +151,19 @@ map:
 #############
 ---
 title: Tam a zpátky
+en title: There and Back
 cap: 2
 notes: 1
 text: Děda chodil k řece pro dřevo. Tam a zpátky, pořád stejnou cestou.
+en text: Grandpa went to the river for wood. There and back, always the same way.
 text: Co pustíš, vrátí se na své místo. I sny na tebe počkají.
+en text: What you let go returns to its place. Even dreams will wait for you.
 word a: řeka
+en word a: river
 word b: dřevo
+en word b: wood
 word x: ~poklad
+en word x: treasure
 gate A: !a b
 map:
 ############
@@ -123,17 +174,26 @@ map:
 ############
 ---
 title: Poslední teplo
+en title: Last Warmth
 cap: 2
 notes: 1
 hot: 1
 text: Děda, Bára, jezero. Každé za jinou mlhou. Teplo máš naposledy.
+en text: Grandpa, Bára, the lake. Each behind a different mist. This is your last warmth.
 text: Okno unese dvě slova, zápis jedno. Na pořadí záleží.
+en text: The window holds two words, the notes one. Order matters.
 word a: děda
+en word a: grandpa
 word b: Bára
+en word b: Bára
 word c: jezero
+en word c: lake
 word x: ~vlk
+en word x: wolf
 word z: ~loď
+en word z: boat
 word q: ~moře
+en word q: sea
 gate A: !a b c
 map:
 ###############
@@ -145,22 +205,35 @@ map:
 ###############
 ---
 title: Příběh
+en title: The Story
 cap: 3
 notes: 1
 text: Ema čeká na příběh. Celý a pravdivý.
+en text: Ema is waiting for a story. Whole and true.
 text: Zápis unese jen jedno slovo. Rozmysli, co v něm bude – a kdy.
+en text: The notes hold only one word. Think about what it will be – and when.
 word w: zima
+en word w: winter
 word a: děda
+en word a: grandpa
 word b: mluvil
+en word b: spoke
 word c: pomalu
+en word c: slowly
 word y: ~pomalu
+en word y: slowly
 word z: ~rychle
+en word z: fast
 gate S: -
 gate A: !a>b>c
 after: Na displeji stojí: Děda mluvil pomalu.
+en after: The screen says: Grandpa spoke slowly.
 after: Ema: Jo. Přesně tak mluvil.
+en after: Ema: Yeah. That's exactly how he talked.
 after: Ema: Tos nevymyslel, viď?
+en after: Ema: You didn't make that up, did you?
 after: Nevymyslel. Jen našel, co zůstalo.
+en after: I didn't. I only found what was left.
 map:
 ################
 #####a#b####=###
