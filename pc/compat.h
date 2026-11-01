@@ -5,6 +5,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef _WIN32
+// MinGW: one-argument mkdir, and SDL2main provides WinMain and calls SDL_main
+#include <direct.h>
+#include <sys/stat.h>
+#define mkdir(path, mode) _mkdir(path)
+#define main SDL_main
+#endif
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif

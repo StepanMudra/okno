@@ -5,6 +5,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#ifdef _WIN32
+#include <direct.h>
+#define chdir _chdir
+#else
+#include <unistd.h>
+#endif
 
 #include "compat.h"
 #include "font_data.h"
@@ -38,8 +45,18 @@ static void set_blend(SDL_Texture* t) {
 
 void gfxInitDefault(void) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+	// an okno-save folder where the game is started keeps it portable; otherwise the save goes to the
+	// user's data folder (a macOS .app starts in "/", where nothing can be written)
+	struct stat sb;
+	if (stat("okno-save", &sb) != 0) {
+		char* pref = SDL_GetPrefPath("", "Okno");
+		if (pref) {
+			if (chdir(pref) != 0) fprintf(stderr, "okno: cannot use %s\n", pref);
+			SDL_free(pref);
+		}
+	}
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-	window = SDL_CreateWindow("OKNO – hra od Clauda", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, CANVAS_W * 3 / 2,
+	window = SDL_CreateWindow("OKNO", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, CANVAS_W * 3 / 2,
 		CANVAS_H * 3 / 2, SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(ren, CANVAS_W, CANVAS_H);

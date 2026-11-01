@@ -1,0 +1,89 @@
+name: Build
+on:
+  push:
+    branches: [pc]
+  workflow_dispatch:
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
+      - run: make -f Makefile.pc
+      - run: |
+          mkdir -p okno-linux
+          cp okno README.md LICENSE okno-linux/
+          tar czf okno-linux-x86_64.tar.gz okno-linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: okno-linux-x86_64
+          path: okno-linux-x86_64.tar.gz
+
+  macos:
+    # one universal binary (Apple silicon + Intel) with SDL2 linked in statically, packed as Okno.app
+    runs-on: macos-14
+    env:
+      SDL: "2.30.9"
+    steps:
+      - uses: actions/checkout@v4
+      - name: SDL2 (static, universal)
+        run: |
+          curl -sSL -o sdl.tar.gz https://github.com/libsdl-org/SDL/releases/download/release-$SDL/SDL2-$SDL.tar.gz
+          tar xzf sdl.tar.gz
+          cmake -S SDL2-$SDL -B sdl-build -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST=OFF \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DCMAKE_INSTALL_PREFIX="$PWD/sdl"
+          cmake --build sdl-build -j4
+          cmake --install sdl-build
+      - name: Build
+        run: |
+          make -f Makefile.pc CFLAGS="-O2 -Wall -arch arm64 -arch x86_64 -mmacosx-version-min=11.0" \
+            OKNO_CFLAGS="-DPC -Ipc -Isource $(sdl/bin/sdl2-config --cflags)" \
+            OKNO_LIBS="$(sdl/bin/sdl2-config --static-libs) -lm"
+          lipo -info okno
+          otool -L okno
+      - name: Okno.app
+        run: |
+          mkdir -p Okno.app/Contents/MacOS
+          cp okno Okno.app/Contents/MacOS/okno
+          cat > Okno.app/Contents/Info.plist <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>CFBundleName</key><string>OKNO</string>
+            <key>CFBundleExecutable</key><string>okno</string>
+            <key>CFBundleIdentifier</key><string>io.github.stepanmudra.okno</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>CFBundleShortVersionString</key><string>0.9.3</string>
+            <key>LSMinimumSystemVersion</key><string>11.0</string>
+            <key>NSHighResolutionCapable</key><true/>
+          </dict></plist>
+          PLIST
+          codesign --force --deep -s - Okno.app
+          mkdir okno-macos
+          mv Okno.app README.md LICENSE okno-macos/
+          ditto -c -k --keepParent okno-macos okno-macos.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: okno-macos
+          path: okno-macos.zip
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 make zip
+      - run: make -f Makefile.pc CC=gcc CFLAGS="-O2 -Wall -static-libgcc"
+      - run: |
+          mkdir okno-windows
+          cp okno.exe /mingw64/bin/SDL2.dll README.md LICENSE okno-windows/
+          zip -r okno-windows-x86_64.zip okno-windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: okno-windows-x86_64
+          path: okno-windows-x86_64.zip

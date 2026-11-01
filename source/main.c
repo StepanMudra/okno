@@ -1470,7 +1470,9 @@ static void update_play(u32 down, u32 held, float dt) {
 
 // ---------------------------------------------------------------------------
 
-int main(void) {
+int main(int argc, char** argv) {
+	(void)argc;
+	(void)argv;
 	gfxInitDefault();
 	gfxSet3D(true);
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
