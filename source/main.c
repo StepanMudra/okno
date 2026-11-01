@@ -84,6 +84,7 @@ static C2D_TextBuf tbuf;
 static C2D_Image img[12];
 static float eye;      // current eye sign * slider strength while drawing the top screen
 static float timeSec;  // global clock
+static float squint;   // 0..1 while L is held (PC: stronger depth sway)
 
 static u32 rgba(float r, float g, float b, float a) {
 	if (a < 0) a = 0;
@@ -1037,6 +1038,12 @@ static void draw_bottom_play(void) {
 	bool usesHeat = L->hot;
 	for (int y = 0; y < GH && !usesHeat; y++)
 		usesHeat = strchr(L->map[y], '^') || strchr(L->map[y], '~');
+#ifdef PC
+	bool fakes = false;
+	for (int w = 0; w < 26; w++) fakes |= L->words[w] && is_fake(w);
+	if (fakes)
+		text("Q (podržet): zamhouřit oči", 14, SCR_H - 46, 0.42f, rgba(0.7f, 0.75f, 1, 0.6f + 0.4f * squint), 0, 0, 0);
+#endif
 	if (usesHeat)
 		text(st.hot ? "teplota: vysoká – vidíš i to, co není" : "teplota: nízká", BOT_W - 12, SCR_H - 46, 0.42f,
 			st.hot ? rgba(1, 0.6f, 0.35f, 0.9f) : rgba(0.5f, 0.8f, 1, 0.8f), C2D_AlignRight, 0, 0);
@@ -1470,6 +1477,7 @@ int main(void) {
 		if (cp.dx > 60) held |= KEY_RIGHT;
 
 		update_particles(dt);
+		squint += ((held & KEY_L) ? 1 - squint : -squint) * fminf(1, dt * 6);
 		audio_music(screen == SC_TITLE || screen == SC_CHAPTERS ? MUSIC_TITLE
 			: screen == SC_END ? MUSIC_END : MUSIC_CH1 + chapter_of(levelIdx));
 
@@ -1543,8 +1551,9 @@ int main(void) {
 			C3D_RenderTarget* target = e == 0 ? topL : topR;
 			eye = (e == 0 ? 1 : -1) * slider * 3.0f;
 #ifdef PC
-			// no stereo on a monitor: a slow sway makes depth (and fake words) visible instead
-			eye = 1.4f * sinf(timeSec * 0.8f);
+			// no stereo on a monitor: a slow sway makes depth (and fake words) visible instead;
+			// holding L (Q) squints – the sway grows so depth differences are easy to see
+			eye = (1.6f + 3.4f * squint) * sinf(timeSec * 0.9f);
 #endif
 			C2D_TargetClear(target, C2D_Color32(4, 5, 14, 255));
 			C2D_SceneBegin(target);
