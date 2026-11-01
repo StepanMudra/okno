@@ -12,7 +12,7 @@ jobs:
       - run: make -f Makefile.pc
       - run: |
           mkdir -p okno-linux
-          cp okno README.md LICENSE okno-linux/
+          cp okno README.md README.cs.md LICENSE okno-linux/
           tar czf okno-linux-x86_64.tar.gz okno-linux
       - uses: actions/upload-artifact@v4
         with:
@@ -60,7 +60,7 @@ jobs:
           PLIST
           codesign --force --deep -s - Okno.app
           mkdir okno-macos
-          mv Okno.app README.md LICENSE okno-macos/
+          mv Okno.app README.md README.cs.md LICENSE okno-macos/
           ditto -c -k --keepParent okno-macos okno-macos.zip
       - uses: actions/upload-artifact@v4
         with:
@@ -81,7 +81,7 @@ jobs:
       - run: make -f Makefile.pc CC=gcc CFLAGS="-O2 -Wall -static-libgcc"
       - run: |
           mkdir okno-windows
-          cp okno.exe /mingw64/bin/SDL2.dll README.md LICENSE okno-windows/
+          cp okno.exe /mingw64/bin/SDL2.dll README.md README.cs.md LICENSE okno-windows/
           zip -r okno-windows-x86_64.zip okno-windows
       - uses: actions/upload-artifact@v4
         with:
