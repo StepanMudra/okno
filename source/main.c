@@ -1236,6 +1236,25 @@ static void save_screenshot(void) {
 		fwrite(row, 1, sizeof row, f);
 	}
 	fclose(f);
+	// with the 3D slider up, also keep the right eye of the top screen (to check depth)
+	if (osGet3DSliderState() > 0) {
+		snprintf(path, sizeof path, SAVE_DIR "/shots/%03dR.ppm", shotCount - 1);
+		f = fopen(path, "wb");
+		if (!f) return;
+		fprintf(f, "P6\n400 240\n255\n");
+		u16 fw, fh;
+		u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_RIGHT, &fw, &fh);
+		for (int y = 0; y < 240; y++) {
+			for (int x = 0; x < 400; x++) {
+				u8* px = fb + ((x * 240) + (239 - y)) * 3;
+				row[x * 3 + 0] = px[2];
+				row[x * 3 + 1] = px[1];
+				row[x * 3 + 2] = px[0];
+			}
+			fwrite(row, 1, sizeof row, f);
+		}
+		fclose(f);
+	}
 #endif
 }
 

@@ -24,6 +24,10 @@ o slovo víc a to nejstarší zapomeneš.
 
 Falešná slova vypadají úplně stejně jako pravá. Na 3DS se zapnutým 3D se ale vznášejí v jiné hloubce.
 
+![Anaglyf obou očí: falešné slovo vpravo má rozdvojený obraz, vznáší se blíž k tobě](docs/img/anaglyph_3d.png)
+
+*Obraz levého (červeně) a pravého oka (modře) z emulátoru: pravá slova sedí u podlahy, falešné slovo vpravo se vznáší před ní.*
+
 ![Karta kapitoly](docs/img/chapter_card.png) ![Teplo](docs/img/room_heat.png)
 
 ## Hraní na 3DS
